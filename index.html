@@ -1,0 +1,1264 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Keto Check</title><link rel="icon" href="keto-icon-192.png"><link rel="apple-touch-icon" href="keto-icon-180.png"><link rel="manifest" href="manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Keto Check"><meta name="theme-color" content="#17181A"></head><body><title>Keto Check</title>
+<style>
+:root{
+  --paper:#F6F4EF; --card:#FFFFFF; --ink:#1F211E; --muted:#6E7268; --line:#E3E0D7;
+  --gold:#A8802F; --gold-soft:#F0E6CE;
+  --go:#1B7F4B; --go-bg:#E4F2E9; --ok:#3A7D44; --ok-bg:#EAF2E4;
+  --care:#A66A00; --care-bg:#F7EDD8; --skip:#B23A3A; --skip-bg:#F7E3E1;
+  --guess:#6E7268;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#17181A; --card:#1F2124; --ink:#EAEBE6; --muted:#9A9E94; --line:#2E3134;
+    --gold:#D9B45B; --gold-soft:#33301F;
+    --go:#4CC983; --go-bg:#15291E; --ok:#8FCB6E; --ok-bg:#1B2618;
+    --care:#E0A33E; --care-bg:#2C2415; --skip:#E06C6C; --skip-bg:#2E1B1A;
+  }
+}
+:root[data-theme="light"]{
+  --paper:#F6F4EF; --card:#FFFFFF; --ink:#1F211E; --muted:#6E7268; --line:#E3E0D7;
+  --gold:#A8802F; --gold-soft:#F0E6CE;
+  --go:#1B7F4B; --go-bg:#E4F2E9; --ok:#3A7D44; --ok-bg:#EAF2E4;
+  --care:#A66A00; --care-bg:#F7EDD8; --skip:#B23A3A; --skip-bg:#F7E3E1;
+}
+:root[data-theme="dark"]{
+  --paper:#17181A; --card:#1F2124; --ink:#EAEBE6; --muted:#9A9E94; --line:#2E3134;
+  --gold:#D9B45B; --gold-soft:#33301F;
+  --go:#4CC983; --go-bg:#15291E; --ok:#8FCB6E; --ok-bg:#1B2618;
+  --care:#E0A33E; --care-bg:#2C2415; --skip:#E06C6C; --skip-bg:#2E1B1A;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);
+  font-family:system-ui,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.45;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:620px;margin:0 auto;padding:0 16px 80px}
+.disp{font-family:"Segoe UI Variable Display","SF Pro Rounded",ui-rounded,system-ui,sans-serif}
+.num{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+
+/* ── budget bar ── */
+.topbar{position:sticky;top:0;z-index:5;background:var(--paper);
+  padding:14px 0 10px;border-bottom:1px solid var(--line)}
+.toprow{display:flex;align-items:baseline;gap:10px}
+.brand{font-weight:800;letter-spacing:.06em;font-size:13px;text-transform:uppercase;color:var(--gold)}
+.left-lbl{margin-left:auto;font-size:13px;color:var(--muted)}
+.left-lbl b{color:var(--ink);font-size:15px}
+.budget-edit{background:none;border:none;color:var(--muted);font:inherit;font-size:13px;
+  cursor:pointer;padding:2px 4px;border-radius:6px;text-decoration:underline dotted}
+.budget-edit:hover,.budget-edit:focus-visible{color:var(--gold);outline:2px solid var(--gold);outline-offset:1px}
+.ticks{display:flex;gap:2px;margin-top:8px;height:10px}
+.ticks span{flex:1;border-radius:2px;background:var(--line);transition:background .25s}
+.ticks span.f{background:var(--go)}
+.ticks span.f.warn{background:var(--care)}
+.ticks span.f.over{background:var(--skip)}
+
+/* ── input ── */
+.ask{margin-top:26px}
+.ask label{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.askrow{display:flex;gap:10px}
+#q{flex:1;min-width:0;padding:16px 18px;font-size:19px;font-family:inherit;color:var(--ink);
+  background:var(--card);border:2px solid var(--line);border-radius:14px}
+#q::placeholder{color:var(--muted);opacity:.8}
+#q:focus{outline:none;border-color:var(--gold)}
+.scan{width:58px;flex:none;border-radius:14px;border:2px solid var(--line);background:var(--card);
+  cursor:pointer;display:flex;align-items:center;justify-content:center}
+.scan:hover,.scan:focus-visible{border-color:var(--gold);outline:none}
+.scan svg{width:26px;height:26px;fill:var(--muted)}
+.scan:hover svg{fill:var(--gold)}
+.scanhint{font-size:12.5px;color:var(--muted);margin:8px 2px 0}
+.warnbar{margin-top:14px;padding:10px 14px;border-radius:10px;font-size:13.5px;
+  background:var(--care-bg);color:var(--care);border:1px solid var(--care)}
+.mform{display:flex;flex-direction:column;gap:10px;width:100%}
+.mform label{font-size:13px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.mform input{padding:10px 12px;font-size:17px;font-family:inherit;color:var(--ink);
+  background:var(--paper);border:2px solid var(--line);border-radius:10px;max-width:220px}
+.mform input:focus{outline:none;border-color:var(--gold)}
+.mform .btn{align-self:flex-start}
+.mform .hint{font-size:12px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chips button{background:var(--card);border:1px solid var(--line);color:var(--muted);
+  font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;cursor:pointer}
+.chips button:hover{border-color:var(--gold);color:var(--ink)}
+.chips button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+
+/* ── verdict card ── */
+.card{margin-top:18px;border-radius:16px;padding:22px 22px 20px;display:none}
+.card.show{display:block;animation:pop .18s ease-out}
+@keyframes pop{from{transform:scale(.98);opacity:.6}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion: reduce){.card.show{animation:none}}
+.card.t-go{background:var(--go-bg)} .card.t-go .word{color:var(--go)}
+.card.t-ok{background:var(--ok-bg)} .card.t-ok .word{color:var(--ok)}
+.card.t-care{background:var(--care-bg)} .card.t-care .word{color:var(--care)}
+.card.t-skip{background:var(--skip-bg)} .card.t-skip .word{color:var(--skip)}
+.card.t-unk{background:var(--card);border:1px dashed var(--line)}
+.card .food{font-size:14px;color:var(--muted);margin:0 0 2px}
+.card .food b{color:var(--ink)}
+.word{font-size:clamp(34px,9vw,46px);font-weight:800;line-height:1.05;margin:0;
+  letter-spacing:-.01em;text-wrap:balance}
+.say{font-size:17px;margin:10px 0 0;max-width:34em}
+.say b{white-space:nowrap}
+.how{font-size:15px;color:var(--muted);margin:10px 0 0;padding-top:10px;
+  border-top:1px solid rgba(128,128,128,.18)}
+.how b{color:var(--ink)}
+.guess-tag[hidden]{display:none}
+.guess-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--guess);border:1px solid var(--guess);
+  border-radius:5px;padding:1px 7px;margin-bottom:8px;opacity:.75}
+.actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;font-size:15px;padding:11px 18px;border-radius:11px;
+  border:none;cursor:pointer;background:var(--ink);color:var(--paper)}
+.btn:hover{opacity:.88}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid rgba(128,128,128,.35)}
+.logged-note{font-size:14px;font-weight:700;color:var(--go);align-self:center}
+
+/* ── ketosis panel ── */
+.keto{display:flex;gap:14px;align-items:flex-start;margin-top:18px;padding:15px 18px 13px;
+  border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.keto .flame{width:34px;height:34px;flex:none;margin-top:3px;fill:var(--muted);opacity:.45;transition:fill .3s,opacity .3s}
+.keto.k-in{border-color:var(--gold)}
+.keto.k-in .flame{fill:var(--gold);opacity:1;filter:drop-shadow(0 0 7px rgba(217,180,91,.55));
+  animation:flick 1.6s infinite alternate ease-in-out}
+.keto.k-adapt .flame{fill:var(--care);opacity:.85}
+.keto.k-risk .flame{fill:var(--care);opacity:.95;animation:flick .45s infinite alternate}
+.keto.k-out .flame{fill:var(--skip);opacity:.5}
+.keto.pop .flame{animation:pop2 .4s ease}
+@keyframes flick{from{transform:scale(1)}to{transform:scale(1.14) rotate(-3deg)}}
+@keyframes pop2{50%{transform:scale(1.5)}}
+@media (prefers-reduced-motion: reduce){.keto .flame{animation:none!important}}
+.ktext{flex:1;min-width:0}
+.krow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ktitle{font-weight:800;font-size:17px;letter-spacing:.02em}
+.k-in .ktitle{color:var(--gold)} .k-adapt .ktitle,.k-risk .ktitle{color:var(--care)} .k-out .ktitle{color:var(--skip)}
+.kbest{margin-left:auto;font-size:12px;color:var(--muted)}
+.kmsg{margin:3px 0 4px;font-size:14.5px}
+.est{font-size:10.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+
+/* ── week chart ── */
+.week{margin-top:30px}
+.wbars{position:relative;display:flex;gap:8px;align-items:flex-end;height:88px}
+.wcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;justify-content:flex-end}
+.wbar{width:100%;max-width:36px;border-radius:5px 5px 2px 2px;background:var(--go);opacity:.85}
+.wbar.over{background:var(--skip)}
+.wbar.today{outline:2px solid var(--gold);outline-offset:1px}
+.wcol span{font-size:11px;color:var(--muted)}
+.wline{position:absolute;left:0;right:0;border-top:2px dashed var(--line);pointer-events:none}
+
+/* ── tools & toast ── */
+.tools{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap}
+.tools .btn{font-size:14px;padding:9px 14px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(90px);
+  background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;
+  font-size:14px;font-weight:600;opacity:0;transition:.3s;z-index:20;max-width:90vw;text-align:center}
+#toast.show{transform:translateX(-50%);opacity:1}
+
+/* ── log ── */
+.log{margin-top:34px}
+.log h2,.week h2{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 10px}
+.log ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.log li{display:flex;align-items:center;gap:10px;background:var(--card);
+  border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:15px}
+.log li .g{margin-left:auto;color:var(--muted)}
+.log li button{background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:16px;line-height:1;padding:4px 6px;border-radius:6px}
+.log li button:hover{color:var(--skip)}
+.log li button:focus-visible{outline:2px solid var(--gold)}
+.log .empty{color:var(--muted);font-size:14px;padding:4px 2px}
+.foot{margin-top:40px;font-size:12.5px;color:var(--muted);line-height:1.6}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="toprow">
+      <span class="brand disp">Keto Check</span>
+      <span class="left-lbl"><b class="num" id="leftG">20g</b> left today
+        <button class="budget-edit" id="editBudget" title="Change daily budget">budget: <span class="num" id="budgetG">20</span>g</button>
+      </span>
+    </div>
+    <div class="ticks" id="ticks" aria-label="carbs used today"></div>
+  </div>
+
+  <div class="keto" id="ketoPanel">
+    <svg viewBox="0 0 24 24" class="flame" aria-hidden="true">
+      <path d="M12 2C13 6 8 8 8 13a4 4 0 0 0 8 0c0-2.2-1.1-3.8-2.2-5.3-.3 1.3-.9 2.1-1.8 2.6C12.6 7.6 12.6 4.8 12 2z"/>
+    </svg>
+    <div class="ktext">
+      <div class="krow"><span class="ktitle disp" id="ketoTitle"></span><span class="kbest" id="ketoBest"></span></div>
+      <p class="kmsg" id="ketoMsg"></p>
+      <span class="est">estimate — based on what you log here</span>
+    </div>
+  </div>
+
+  <div class="ask">
+    <label for="q">What are you thinking of eating?</label>
+    <div class="askrow">
+      <input id="q" type="text" autocomplete="off" autofocus
+        placeholder="type anything… &quot;2 eggs&quot;, &quot;big mac&quot;, &quot;handful of grapes&quot;">
+      <button class="scan" id="scanBtn" title="Scan a nutrition label" aria-label="Scan a nutrition label">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3 7.2 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9zm3 5.5A5.5 5.5 0 1 1 6.5 14 5.5 5.5 0 0 1 12 8.5zm0 2A3.5 3.5 0 1 0 15.5 14 3.5 3.5 0 0 0 12 10.5z"/></svg>
+      </button>
+      <input type="file" id="camInput" accept="image/*" capture="environment" hidden>
+    </div>
+    <p class="scanhint">Camera button: photo the <b>nutrition label</b> — close up, flat, good light. If it can’t read it, you can type the two numbers instead.</p>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="card" id="card" aria-live="polite">
+    <div id="guessTag" class="guess-tag" hidden>best guess</div>
+    <p class="food" id="cFood"></p>
+    <h1 class="word disp" id="cWord"></h1>
+    <p class="say" id="cSay"></p>
+    <p class="how" id="cHow"></p>
+    <p class="how" id="cSwap"></p>
+    <div class="actions" id="cActions"></div>
+  </div>
+
+  <div class="log">
+    <h2>Eaten today</h2>
+    <ul id="logList"></ul>
+  </div>
+
+  <div class="week">
+    <h2>Last 7 days</h2>
+    <div class="wbars" id="weekBars"></div>
+  </div>
+
+  <div class="tools">
+    <button class="btn ghost" id="saveBtn">Save</button>
+    <button class="btn ghost" id="backupBtn">Backup file</button>
+    <button class="btn ghost" id="restoreBtn">Restore</button>
+    <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+  </div>
+  <div id="toast" role="status"></div>
+
+  <p class="foot">Counts <b>net carbs</b> (carbs minus fiber) — the number that matters on keto.
+  All figures are good-faith estimates from typical products; packaged foods vary, so check the
+  label when you have one. Not medical advice.</p>
+</div>
+
+<script>
+'use strict';
+/* ═══ FOOD BRAIN ═══ names|aliases , net carbs per 100g (per 100ml if L), serving g, serving word, flags */
+const DB=[
+// meat & fish
+["chicken breast|chicken|grilled chicken|roast chicken|rotisserie chicken",0,120,"piece"],
+["chicken thigh|chicken thighs|chicken leg|drumstick",0,90,"piece"],
+["chicken wings|wings|buffalo wings",1,30,"wing"],
+["fried chicken|kfc|breaded chicken",7,140,"piece"],
+["chicken tenders|chicken strips|tendies|chicken fingers",12,50,"tender"],
+["chicken nuggets|nuggets|mcnuggets|dino nuggets",9,17,"nugget"],
+["steak|beef|ground beef|mince|ribeye|sirloin|roast beef",0,200,"steak"],
+["pork|pork chop|pork belly|pulled pork",0,150,"serving"],
+["bacon|bacon rashers",1,12,"slice"],
+["ham",1.5,30,"slice"],
+["sausage|sausages|bratwurst|snag",3,60,"sausage"],
+["salami|pepperoni|chorizo",1.5,10,"slice"],
+["turkey|turkey breast",0,120,"serving"],
+["lamb|lamb chop",0,150,"serving"],
+["venison|deer|duck",0,150,"serving"],
+["meatballs|meatball",5,30,"meatball"],
+["meatloaf",6,150,"slice"],
+["ribs|pork ribs|bbq ribs",5,200,"serving"],
+["beef jerky|jerky|biltong|slim jim|beef stick",9,28,"handful"],
+["pork rinds|pork crackling|crackling|chicharrones|pork scratchings",0,15,"handful"],
+["hot dog frank|frankfurter|wiener|sausage only",4,50,"frank"],
+["salmon|grilled salmon|smoked salmon",0,150,"fillet"],
+["tuna|canned tuna|tuna can",0,100,"can"],
+["shrimp|prawns|prawn",0.2,85,"serving"],
+["cod|white fish|fish fillet|tilapia|snapper|barramundi",0,150,"fillet"],
+["sardines|sardine|anchovies",0,90,"tin"],
+["crab|crab meat",0.5,100,"serving"],
+["lobster",0.5,150,"serving"],
+["liver|beef liver",3.9,100,"serving"],
+["sashimi|raw fish",0.5,30,"piece"],
+// eggs & dairy
+["egg|eggs|boiled egg|fried egg|hard boiled egg|poached egg",0.7,50,"egg"],
+["scrambled eggs|scrambled egg",1,110,"serving"],
+["omelette|omelet|cheese omelette",1.5,150,"omelette"],
+["deviled eggs|devilled eggs",1,30,"half"],
+["butter",0.1,14,"tbsp"],
+["ghee|clarified butter",0,14,"tbsp"],
+["cheese|cheddar|cheddar cheese|tasty cheese|colby|gouda|edam",1.3,28,"slice"],
+["mozzarella|mozzarella cheese",2.2,28,"serving"],
+["parmesan|parmesan cheese",3.2,10,"tbsp"],
+["cream cheese|philadelphia|laughing cow",3.5,30,"tbsp"],
+["brie|camembert",0.5,28,"wedge"],
+["feta|feta cheese",4,28,"serving"],
+["swiss cheese|swiss",1.4,28,"slice"],
+["blue cheese|gorgonzola",2.3,28,"serving"],
+["goat cheese|goats cheese|chevre",0.7,28,"serving"],
+["cottage cheese",3.4,110,"half-cup"],
+["string cheese|cheese stick|babybel",2,28,"stick"],
+["halloumi",2.2,28,"slice"],
+["heavy cream|whipping cream|double cream|thickened cream",2.8,15,"tbsp","L"],
+["sour cream",4.6,15,"tbsp"],
+["milk|whole milk|full cream milk|2% milk|skim milk",4.8,244,"cup","L"],
+["almond milk|unsweetened almond milk",0.3,240,"cup","L"],
+["oat milk",6.6,240,"cup","L"],
+["soy milk",1.2,240,"cup","L"],
+["greek yogurt|greek yoghurt|plain greek yogurt",3.6,170,"tub"],
+["yogurt|yoghurt|plain yogurt|natural yogurt",4.7,170,"tub"],
+["flavored yogurt|fruit yogurt|strawberry yogurt|vanilla yogurt|yoplait",16,150,"tub"],
+["whipped cream|squirty cream",12,15,"tbsp"],
+["ice cream|vanilla ice cream|gelato",23,66,"scoop"],
+["frozen yogurt|froyo",22,87,"half-cup"],
+// fats & oils
+["olive oil|oil|cooking oil|vegetable oil|canola oil|avocado oil",0,14,"tbsp"],
+["coconut oil|mct oil",0,14,"tbsp"],
+["mayo|mayonnaise",0.6,14,"tbsp"],
+["lard|tallow|dripping",0,13,"tbsp"],
+// nuts & seeds
+["almonds|almond",9,28,"handful"],
+["walnuts|walnut",7,28,"handful"],
+["pecans|pecan",4,28,"handful"],
+["macadamias|macadamia|macadamia nuts",5,28,"handful"],
+["cashews|cashew",27,28,"handful"],
+["pistachios|pistachio",18,28,"handful"],
+["peanuts|peanut",7.6,28,"handful"],
+["hazelnuts|hazelnut",7,28,"handful"],
+["brazil nuts|brazil nut",4,28,"handful"],
+["mixed nuts|nuts",11,28,"handful"],
+["trail mix|scroggin",38,40,"handful"],
+["peanut butter|pb",13.5,16,"tbsp"],
+["almond butter",8.8,16,"tbsp"],
+["chia seeds|chia",2,12,"tbsp"],
+["flaxseed|flax|linseed",1.5,10,"tbsp"],
+["sunflower seeds",11,28,"handful"],
+["pumpkin seeds|pepitas",9,28,"handful"],
+// veg — keto friendly
+["avocado|avo",1.8,150,"avocado"],
+["spinach|baby spinach",1.4,30,"cup"],
+["lettuce|iceberg|romaine|cos lettuce|salad leaves",1.2,50,"cup"],
+["kale",5,25,"cup"],
+["arugula|rocket",2,20,"cup"],
+["cabbage|red cabbage",3.3,90,"cup"],
+["broccoli",4,90,"cup"],
+["cauliflower",3,100,"cup"],
+["cauliflower rice|cauli rice",3,120,"cup"],
+["zucchini|courgette",2.1,120,"cup"],
+["zoodles|zucchini noodles",2.1,120,"cup"],
+["cucumber",3.1,100,"cup"],
+["celery",1.4,40,"stalk"],
+["asparagus",1.9,15,"spear"],
+["mushrooms|mushroom",2.3,70,"cup"],
+["bell pepper|capsicum|red pepper|green pepper",3.9,120,"pepper"],
+["jalapeno|jalapenos|chilli|chili pepper",3.7,14,"pepper"],
+["tomato|tomatoes",2.7,120,"tomato"],
+["cherry tomatoes|cherry tomato|grape tomatoes",2.7,17,"tomato"],
+["onion|red onion|brown onion",7.6,110,"onion"],
+["green onion|scallion|spring onion|shallots",4.7,15,"stalk"],
+["garlic|garlic clove",30,3,"clove"],
+["green beans|beans (green)",4.3,100,"cup"],
+["brussels sprouts|brussel sprouts|sprouts",5.2,88,"cup"],
+["eggplant|aubergine",2.3,80,"cup"],
+["olives|olive",0.5,15,"handful"],
+["pickles|pickle|gherkin|dill pickle",1.2,65,"pickle"],
+["sauerkraut",1.8,70,"half-cup"],
+["kimchi",2.4,75,"half-cup"],
+["radish|radishes",1.8,50,"serving"],
+["okra",4.5,80,"cup"],
+["artichoke",5.3,120,"artichoke"],
+// veg — starchy
+["potato|baked potato|boiled potato|jacket potato",15,170,"potato"],
+["mashed potato|mashed potatoes|mash",15,210,"cup"],
+["french fries|fries|hot chips|chips (fries)",37,117,"medium serve"],
+["hash brown|hash browns",23,55,"hash brown"],
+["sweet potato|kumara",17,150,"potato"],
+["corn|sweetcorn|corn on the cob",16,90,"cob"],
+["carrot|carrots",6.8,60,"carrot"],
+["peas|green peas",9,80,"half-cup"],
+["beetroot|beet|beets",6.8,80,"serving"],
+["butternut squash|squash",9.7,100,"cup"],
+["pumpkin",6,100,"cup"],
+["parsnip",13,85,"parsnip"],
+["leek|leeks",12,90,"leek"],
+// fruit
+["apple",11.4,180,"apple"],
+["banana",20.2,118,"banana"],
+["orange",9.4,130,"orange"],
+["mandarin|clementine|tangerine",10,75,"mandarin"],
+["grapes|grape",17,5,"grape"],
+["strawberries|strawberry",5.7,12,"berry"],
+["blueberries|blueberry",12,50,"handful"],
+["raspberries|raspberry",5.4,30,"handful"],
+["blackberries|blackberry",4.3,30,"handful"],
+["watermelon",7.2,150,"cup"],
+["cantaloupe|rockmelon|melon",7.3,160,"cup"],
+["honeydew",8.3,170,"cup"],
+["pineapple",11.7,165,"cup"],
+["mango",13.4,165,"cup"],
+["peach",8,150,"peach"],
+["nectarine",9,140,"nectarine"],
+["pear",12,180,"pear"],
+["cherries|cherry",13.9,8,"cherry"],
+["kiwi|kiwifruit",11.7,70,"kiwi"],
+["lemon|lemon juice",6.5,58,"lemon"],
+["lime|lime juice",8,44,"lime"],
+["plum",10,66,"plum"],
+["grapefruit",9,120,"half"],
+["pomegranate",14,90,"half-cup"],
+["apricot",9,35,"apricot"],
+["fig|figs",16,50,"fig"],
+["dates|date|medjool date",68,7,"date"],
+["raisins|sultanas",75,30,"small box"],
+["dried apricots|dried apricot",55,8,"apricot"],
+["dried fruit|dried mango|banana chips",58,30,"handful"],
+["coconut|fresh coconut|coconut flakes",6.2,45,"chunk"],
+["coconut cream|coconut milk",3,15,"tbsp","L"],
+// bread, grains, pasta
+["bread|white bread|toast|slice of bread",46,30,"slice"],
+["whole wheat bread|brown bread|wholemeal bread|multigrain bread",40,30,"slice"],
+["sourdough|sourdough bread",47,50,"slice"],
+["keto bread|low carb bread|helgas|helgas bread|helgas lower carb|lower carb bread",7,30,"slice"],
+["cloud bread",2,20,"slice"],
+["bagel",51,100,"bagel"],
+["croissant",42,60,"croissant"],
+["tortilla|wrap|flour tortilla",45,45,"tortilla"],
+["low carb wrap|keto wrap|low carb tortilla",9,42,"wrap"],
+["pita|pita bread",52,60,"pita"],
+["naan|naan bread",45,90,"naan"],
+["english muffin",42,57,"muffin"],
+["bread roll|dinner roll|bun|burger bun",44,50,"roll"],
+["garlic bread",41,40,"slice"],
+["rice|white rice|jasmine rice|basmati",27,158,"cup"],
+["brown rice",22,195,"cup"],
+["fried rice",30,198,"cup"],
+["pasta|spaghetti|penne|noodles|fettuccine",29,140,"cup"],
+["mac and cheese|macaroni cheese|mac n cheese",22,200,"cup"],
+["ramen|instant noodles|cup noodles|2 minute noodles",25,350,"bowl"],
+["shirataki noodles|konjac noodles|miracle noodles|konjac rice|slendier",1,100,"pack"],
+["oatmeal|porridge|oats (cooked)",10,234,"bowl"],
+["overnight oats",12,200,"jar"],
+["granola|muesli",55,45,"half-cup"],
+["cereal|cornflakes|frosties|cheerios|corn flakes|nutri grain|coco pops|fruit loops|froot loops|special k|sultana bran|just right|milo cereal",80,30,"bowl"],
+["weetbix|weet bix|weetabix",67,17,"biscuit"],
+["quinoa",19,185,"cup"],
+["couscous",21,157,"cup"],
+["pancake|pancakes",28,77,"pancake"],
+["waffle|waffles",33,75,"waffle"],
+["french toast",27,65,"slice"],
+["muffin|blueberry muffin|chocolate muffin",46,110,"muffin"],
+["crackers|cracker|ritz|saltines|shapes|jatz",65,15,"handful"],
+["rice cakes|rice cake|rice crackers|corn thins|sakata",81,9,"cake"],
+["popcorn",58,11,"cup"],
+["pretzels|pretzel",78,30,"handful"],
+["tortilla chips|corn chips|doritos|nachos chips|grain waves",60,28,"handful"],
+["potato chips|chips|crisps|chips (bag)|lays|pringles|smiths|red rock deli|kettle chips",47,28,"handful"],
+["almond flour",10,28,"quarter-cup"],
+["coconut flour",21,28,"quarter-cup"],
+["psyllium husk|psyllium",1,5,"tbsp"],
+// legumes & soy
+["black beans",15,86,"half-cup"],
+["kidney beans",15,88,"half-cup"],
+["baked beans",17,130,"half-cup"],
+["chickpeas|garbanzo beans",19,82,"half-cup"],
+["hummus",9,30,"dollop"],
+["lentils|dal|dahl",12,99,"half-cup"],
+["refried beans",11,120,"half-cup"],
+["edamame",4,78,"half-cup"],
+["tofu",1.9,85,"serving"],
+["tempeh",5,84,"serving"],
+// sweets
+["sugar|white sugar",100,4,"tsp"],
+["honey",82,21,"tbsp"],
+["maple syrup|syrup",67,20,"tbsp"],
+["jam|jelly (spread)|marmalade",65,20,"tbsp"],
+["nutella|chocolate spread",57,19,"tbsp"],
+["milk chocolate|chocolate|chocolate bar|dairy milk|hersheys|cadbury|toblerone|galaxy|whittakers",57,44,"bar"],
+["dark chocolate|85% chocolate|90% chocolate|lindt dark",19,10,"square"],
+["sugar free chocolate|keto chocolate|stevia chocolate|vitawerx|well naturally|noshu chocolate",5,10,"square"],
+["snickers|mars bar|twix|kitkat|candy bar|cherry ripe|boost|picnic|crunchie|flake|twirl|aero|bounty|milky way|moro|turkish delight|violet crumble|wagon wheel",61,50,"bar"],
+["gummy bears|gummies|lollies|haribo|sour worms|allens|snakes|party mix|red frogs|jelly babies|sour patch|starburst|minties|fantales",77,30,"handful"],
+["m&ms|skittles|smarties|maltesers",71,42,"packet"],
+["cookie|cookies|biscuit|choc chip cookie",65,16,"cookie"],
+["oreo|oreos",71,11,"cookie"],
+["brownie",50,56,"brownie"],
+["cake|birthday cake|chocolate cake|sponge cake",55,80,"slice"],
+["cheesecake",32,125,"slice"],
+["donut|doughnut|glazed donut|cinnamon donut",49,60,"donut"],
+["cupcake",60,65,"cupcake"],
+["apple pie|pumpkin pie|pecan pie|pie (sweet)",34,125,"slice"],
+["popsicle|ice block|icy pole|ice lolly|zooper dooper",17,60,"pop"],
+["pudding|custard",20,110,"cup"],
+["marshmallow|marshmallows",81,7,"marshmallow"],
+["fat bomb|fat bombs",4,25,"fat bomb"],
+["erythritol|swerve|monk fruit|monkfruit sweetener",0,4,"tsp"],
+["stevia|sweetener packet|splenda",0,1,"packet"],
+["quest bar|keto bar|low carb protein bar|atkins bar|atkins",7,60,"bar"],
+["chewing gum|gum|extra gum|extra chewing gum|sugar free gum|5 gum|eclipse gum|airwaves",0,2,"piece"],
+["bubble gum|hubba bubba|juicy fruit",75,5,"piece"],
+["tic tacs|tic tac|mints|breath mints",95,0.6,"mint"],
+["sugar free mints|eclipse mints",2,0.6,"mint"],
+["sugar free lollies|sugar free gummies|sugar free candy",15,30,"handful"],
+["vegemite|marmite",20,5,"tsp"],
+["tim tam|tim tams",65,18,"biscuit"],
+["meat pie|party pie|steak pie",22,175,"pie"],
+["sausage roll",25,120,"roll"],
+["up and go|breakfast drink",10,250,"carton","L"],
+["yopro|chobani fit|high protein yogurt|protein yogurt",3.5,160,"tub"],
+["protein bar",20,60,"bar"],
+["granola bar|muesli bar|cereal bar",56,25,"bar"],
+// drinks
+["water|sparkling water|soda water|mineral water",0,250,"glass","L"],
+["coke|cola|pepsi|soda|soft drink|fizzy drink",10.6,355,"can","L"],
+["diet coke|coke zero|diet soda|pepsi max|zero sugar soda|diet pepsi|coke no sugar|no sugar coke|sprite zero|fanta zero|solo zero",0,355,"can","L"],
+["sprite|fanta|7up|mountain dew",11,355,"can","L"],
+["orange juice|oj|juice",10,240,"glass","L"],
+["apple juice",11,240,"glass","L"],
+["lemonade",10,240,"glass","L"],
+["gatorade|powerade|sports drink",6,355,"bottle","L"],
+["energy drink|red bull|monster|v drink|v energy|green v",11,250,"can","L"],
+["sugar free energy drink|sugar free red bull|monster zero|red bull sugar free|v|v sugar free|v no sugar|no sugar v|v zero|v blue|white monster|monster ultra|celsius|bang",0.5,250,"can","L"],
+["beer|lager|ale",3.6,355,"can","L"],
+["light beer|lite beer|low carb beer|michelob ultra",1.5,355,"can","L"],
+["wine|red wine|white wine|dry wine|shiraz|sauv blanc|pinot",2.6,150,"glass","L"],
+["sweet wine|moscato|dessert wine|port",7,150,"glass","L"],
+["champagne|prosecco|sparkling wine|brut",1.5,150,"glass","L"],
+["vodka|whiskey|whisky|rum|gin|tequila|bourbon|scotch|spirits",0,44,"shot","L"],
+["rum and coke|whiskey and coke|bourbon and coke",7,240,"glass","L"],
+["vodka soda|whiskey soda|gin and soda",0,240,"glass","L"],
+["gin and tonic|g and t|gin tonic",5.5,240,"glass","L"],
+["margarita|cocktail|pina colada|mojito",13,150,"glass","L"],
+["coffee|black coffee|espresso|americano|long black",0,250,"cup","L"],
+["bulletproof coffee|butter coffee",0.1,250,"cup","L"],
+["latte|flat white|cappuccino|coffee with milk",4,240,"cup","L"],
+["mocha|caramel latte|flavored latte",8,240,"cup","L"],
+["frappuccino|frappe|iced blended coffee",13.5,350,"grande","L"],
+["iced coffee (bottled)|bottled coffee|dare iced coffee|farmers union iced coffee|oak",8,350,"bottle","L"],
+["bubble tea|boba|milk tea",18,500,"cup","L"],
+["milkshake|thickshake|shake",18,350,"cup","L"],
+["hot chocolate|hot cocoa|milo",12,250,"mug","L"],
+["smoothie|fruit smoothie",12,350,"cup","L"],
+["protein shake|whey shake",1.4,350,"shake","L"],
+["protein powder|whey powder|whey",4,30,"scoop"],
+["collagen|collagen powder",0,11,"scoop"],
+["kombucha",3,240,"glass","L"],
+["coconut water",4,240,"glass","L"],
+["tea|green tea|black tea|herbal tea",0,250,"cup","L"],
+["sweet tea|iced tea (sweet)",7.5,240,"glass","L"],
+["tonic water",8.8,240,"glass","L"],
+["bone broth|broth|stock",0.5,240,"cup","L"],
+["electrolyte drink|electrolytes|hydralyte (sugar free)|gatorade zero|powerade zero",0.5,500,"bottle","L"],
+// meals & fast food
+["big mac",19,219,"burger"],
+["cheeseburger|hamburger|mcdonalds burger",26,114,"burger"],
+["quarter pounder",18,202,"burger"],
+["whopper",17,270,"burger"],
+["bunless burger|lettuce burger|protein style burger|burger no bun",2,170,"burger"],
+["pizza|pepperoni pizza|cheese pizza|pizza slice|margherita",29,107,"slice"],
+["hot dog|hotdog|hot dog with bun",22,100,"hot dog"],
+["corn dog",35,75,"corn dog"],
+["taco|hard taco|crunchy taco",13,78,"taco"],
+["burrito|chipotle burrito",22,450,"burrito"],
+["quesadilla",25,180,"quesadilla"],
+["sushi|sushi roll|california roll",25,30,"piece"],
+["chow mein|lo mein|stir fry noodles",18,200,"cup"],
+["spring roll|egg roll (fried)",25,45,"roll"],
+["rice paper roll|summer roll|fresh spring roll",17,80,"roll"],
+["dumplings|dumpling|gyoza|potstickers|dim sims",25,24,"dumpling"],
+["fish and chips",22,400,"serving"],
+["kebab|doner|gyro|shawarma (wrap)",14,400,"kebab"],
+["kebab meat|doner meat only|shawarma meat",2,200,"serving"],
+["pad thai",20,350,"plate"],
+["mcflurry",32,270,"McFlurry"],
+["sundae|ice cream sundae",30,165,"sundae"],
+["onion rings",33,90,"serving"],
+["mozzarella sticks|cheese sticks (fried)",25,28,"stick"],
+["sub|subway|6 inch sub|sandwich (sub)",17,230,"sub"],
+["sandwich|blt|ham sandwich|chicken sandwich|toastie",15,200,"sandwich"],
+["grilled cheese|cheese toastie",23,120,"sandwich"],
+["pbj|pb and j|peanut butter and jelly",44,100,"sandwich"],
+["caesar salad",4,250,"bowl"],
+["salad|garden salad|side salad|greek salad",3,150,"bowl"],
+["cobb salad|chef salad",2,300,"bowl"],
+["potato salad",12,125,"half-cup"],
+["coleslaw|slaw",8,90,"half-cup"],
+["chicken soup|chicken noodle soup",4,245,"bowl"],
+["tomato soup",13,245,"bowl"],
+["broccoli cheese soup|cream soup|pumpkin soup",5,245,"bowl"],
+["pho",9,500,"bowl"],
+["lasagna|lasagne",14,250,"piece"],
+["spaghetti bolognese|spag bol|bolognese",18,350,"plate"],
+["carbonara|alfredo pasta|creamy pasta",20,350,"plate"],
+["curry|chicken curry|butter chicken|korma (no rice)",5,250,"bowl"],
+["curry with rice|butter chicken and rice",20,450,"plate"],
+["stir fry|stir fry no rice|chicken and veg",5,300,"plate"],
+["chili|chilli con carne|chili con carne",9,250,"bowl"],
+["egg mcmuffin|mcmuffin|sausage mcmuffin",20,137,"McMuffin"],
+["breakfast burrito",22,113,"burrito"],
+["avocado toast|avo toast",25,120,"slice"],
+["eggs benedict",7,300,"serving"],
+["acai bowl|smoothie bowl",20,350,"bowl"],
+["charcuterie|cheese board|charcuterie board",3,150,"plate"],
+// condiments & sauces
+["ketchup|tomato ketchup|tomato sauce",25,17,"tbsp"],
+["mustard",3,10,"tsp"],
+["bbq sauce|barbecue sauce",35,17,"tbsp"],
+["ranch|ranch dressing",6,15,"tbsp"],
+["caesar dressing",3,15,"tbsp"],
+["vinaigrette|italian dressing|oil and vinegar",3,15,"tbsp"],
+["honey mustard",23,15,"tbsp"],
+["soy sauce",8,16,"tbsp"],
+["teriyaki sauce",28,18,"tbsp"],
+["sriracha",19,5,"tsp"],
+["hot sauce|tabasco|franks red hot",2,5,"tsp"],
+["buffalo sauce",2,15,"tbsp"],
+["marinara|pasta sauce|tomato sauce (pasta)|napolitana",6,125,"half-cup"],
+["alfredo sauce|cream sauce",4,125,"half-cup"],
+["pesto",3,16,"tbsp"],
+["gravy",6,60,"ladle"],
+["tartar sauce|tartare",4,14,"tbsp"],
+["aioli|garlic aioli",1,14,"tbsp"],
+["vinegar|apple cider vinegar|acv",0.5,15,"tbsp"],
+["relish|sweet relish",30,15,"tbsp"],
+["salsa|pico de gallo",4,30,"dollop"],
+["guacamole|guac",2.5,30,"dollop"],
+["queso|cheese dip",5,30,"dollop"],
+["tzatziki",2.5,30,"dollop"],
+// supermarket & takeaway extras
+["freddo|fun size chocolate|mini chocolate bar",57,12,"mini bar"],
+["ferrero rocher|ferrero|lindor ball|lindt ball",45,12,"ball"],
+["kinder|kinder bueno|kinder surprise",55,21,"bar"],
+["reeses|reese's|peanut butter cup",47,22,"cup"],
+["chupa chups|chupa chup|lollipop",93,12,"lollipop"],
+["mentos",92,2.7,"mint"],
+["werthers|butterscotch|boiled lolly",90,5,"lolly"],
+["anzac biscuit|anzac",65,20,"biscuit"],
+["scotch finger|monte carlo|iced vovo|milk arrowroot|digestives|shortbread|ginger nut|nice biscuit|butternut snap",68,17,"biscuit"],
+["tiny teddies|animal crackers",70,25,"packet"],
+["twisties|cheezels|burger rings|ccs|cheetos|jumpys",55,27,"small bag"],
+["cruskits|vita weat|vitaweat|ryvita|crispbread",65,10,"cracker"],
+["le snak|cheese and crackers|dippit",35,22,"pack"],
+["yakult",17,65,"bottle","L"],
+["fruche|vaalia|petit miam|yogurt pouch",13,140,"pouch"],
+["flavoured milk|chocolate milk|milo drink|nesquik|breaka|moove|strawberry milk|big m",9.5,300,"glass","L"],
+["fish fingers|fish sticks",15,28,"finger"],
+["chicken schnitzel|schnitzel|schnitty",13,150,"schnitzel"],
+["chicken kiev",10,160,"kiev"],
+["magnum|golden gaytime|cornetto|drumstick|paddle pop|weis bar|ice cream stick",30,72,"stick"],
+["halo top|denada|skinny cow|low cal ice cream",9,64,"scoop"],
+["hot cross bun|hot cross buns",50,70,"bun"],
+["banana bread",47,110,"slice"],
+["lamington",55,60,"lamington"],
+["pavlova|meringue",41,110,"slice"],
+["scone|scones",45,60,"scone"],
+["crumpet|crumpets",38,50,"crumpet"],
+["pikelets|pikelet",35,35,"pikelet"],
+["raisin toast|fruit toast|fruit loaf",50,35,"slice"],
+["turkish bread|focaccia|ciabatta",50,80,"piece"],
+["mi goreng|indomie|migoreng",60,80,"packet"],
+["microwave rice|rice pouch|uncle bens rice|sunrice cup",26,250,"pouch"],
+["pasta bake|tuna bake|mornay",15,300,"serving"],
+["zucchini slice|frittata",4,150,"slice"],
+["quiche|quiche lorraine",15,150,"slice"],
+["san choy bow|lettuce cups",4,200,"serving"],
+["poke bowl|poke",18,400,"bowl"],
+["poke bowl no rice|poke no rice",5,300,"bowl"],
+["banh mi|vietnamese roll",30,250,"roll"],
+["chicken parmigiana|parmy|parma|parmi",9,300,"parmy"],
+["bunnings snag|sausage sizzle|sausage in bread",17,120,"snag in bread"],
+["twiggy sticks|kabana|cabanossi",2,20,"stick"],
+["devon|strasburg|fritz|luncheon meat|chicken loaf",3,30,"slice"],
+["prosciutto|pastrami|corned beef|silverside",0.5,30,"slice"],
+["sweet chilli sauce|sweet chili sauce",45,17,"tbsp"],
+["sweet and sour sauce|plum sauce",40,17,"tbsp"],
+["hollandaise",1,30,"dollop"],
+["peri peri sauce|nandos sauce",6,15,"tbsp"],
+["worcestershire|worcester sauce",19,5,"tsp"],
+["oyster sauce|hoisin|fish sauce",25,16,"tbsp"],
+["cordial|ribena",4.4,250,"glass","L"],
+["zero sugar cordial|diet cordial|cottees zero",0.2,250,"glass","L"],
+["iced tea|lipton iced tea|fuze tea",4.5,500,"bottle","L"],
+["remedy kombucha|sugar free kombucha",0.5,330,"bottle","L"],
+["hard seltzer|white claw|seltzer",0.6,330,"can","L"],
+["cider|apple cider (alcoholic)|somersby",3.5,330,"bottle","L"],
+["slurpee|slushie|frozen coke",11,350,"cup","L"],
+["boost juice|juice smoothie",11,450,"cup","L"],
+["sugar free jelly|diet jelly|aeroplane lite|jelly lite",0.5,120,"cup"],
+["noshu|noshu donut|sugar free donut",8,60,"donut"],
+];
+
+/* category fallback — used when nothing in the DB matches */
+const FALLBACK=[
+[/bread|bun|toast|roll|wrap|pita|naan|croiss|baguette|brioche|loaf/,"bready things",45,40,"piece"],
+[/cake|cooki|candy|sweet|choc|dessert|pie|brownie|pastry|donut|doughnut|tart|fudge|caramel|lolly|toffee/,"sugary treats",55,40,"piece"],
+[/pasta|noodle|rice|grain|cereal|oat|wheat|flour|dough|cracker|chip|crisp/,"starchy carbs",30,100,"serving"],
+[/juice|soda|pop\b|smoothie|shake|slurpee|frappe|sweet drink/,"sugary drinks",11,250,"glass"],
+[/berr/,"berries",8,30,"handful"],
+[/fruit|melon/,"fruit",12,120,"serving"],
+[/beef|chicken|pork|steak|meat|fish|lamb|turkey|bacon|ham\b|seafood|salmon|tuna|ribs/,"plain meat and fish",1,150,"serving"],
+[/cheese/,"cheese",2,28,"serving"],
+[/egg/,"eggs",1,50,"egg"],
+[/salad|greens|veggie|vegetable|broccoli|cabbage|leaf/,"low-carb veg",4,100,"serving"],
+[/nut\b|nuts|seed/,"nuts and seeds",9,28,"handful"],
+[/bean|lentil|legume|pea\b/,"beans and legumes",15,86,"half-cup"],
+[/fried|batter|crumbed|breaded|tempura/,"battered or fried food",15,120,"serving"],
+[/sauce|dressing|dip\b/,"sauces",10,15,"tbsp"],
+];
+
+/* ═══ MATCHING ═══ */
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9%&/ ]+/g," ").replace(/\s+/g," ").trim();
+const sing=w=>{
+  if(w.length<4)return w;
+  if(/ies$/.test(w))return w.slice(0,-3)+"y";
+  if(/(ches|shes|sses|xes)$/.test(w))return w.slice(0,-2);
+  if(/s$/.test(w)&&!/ss$/.test(w))return w.slice(0,-1);
+  return w;
+};
+function edist(a,b){ // capped-at-3 edit distance
+  if(Math.abs(a.length-b.length)>2)return 3;
+  const m=a.length,n=b.length,d=[];
+  for(let i=0;i<=m;i++)d[i]=[i];
+  for(let j=0;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+const tokEq=(a,b)=>{
+  if(a===b)return 1;
+  if(a.length>=4&&b.length>=4){
+    if(a.startsWith(b)||b.startsWith(a))return .9;
+    const lim=a.length>=7?2:1;
+    if(edist(a,b)<=lim)return .8;
+  }
+  return 0;
+};
+// index: [entry, alias-string, alias-tokens]
+const IDX=[];
+DB.forEach(e=>e[0].split("|").forEach(a=>{
+  const na=norm(a);IDX.push([e,na,na.split(" ").map(sing)]);
+}));
+function findFood(text){
+  const q=norm(text), qt=q.split(" ").map(sing).filter(w=>w&&!["of","the","some","my","a","an"].includes(w));
+  if(!qt.length)return null;
+  let best=null,bs=0;
+  for(const [e,na,at] of IDX){
+    let s=0;
+    if(na===q||at.join(" ")===qt.join(" "))s=100;
+    else{
+      let hit=0;
+      for(const t of at){let m=0;for(const u of qt)m=Math.max(m,tokEq(t,u));hit+=m;}
+      const cov=hit/at.length;               // how much of the alias we matched
+      const qcov=hit/qt.length;              // how much of the query we used
+      if(cov>=0.99)s=60+at.length*8+qcov*10; // whole alias present in query
+      else if(cov>=0.75&&qt.length<=at.length+1)s=30+cov*20+qcov*10;
+    }
+    if(s>bs){bs=s;best=e;}
+  }
+  return bs>=45?best:null;
+}
+function fallbackFood(text){
+  const q=norm(text);
+  for(const [re,label,nc,serv,unit] of FALLBACK)
+    if(re.test(q))return{names:[text.trim()],nc100:nc,serv,unit,guessLabel:label};
+  return null;
+}
+
+/* ═══ QUANTITY PARSING ═══ */
+const NUMWORDS={a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,
+  dozen:12,couple:2,few:3,half:.5,quarter:.25};
+const UNITS={g:1,gram:1,grams:1,kg:1000,kilo:1000,kilos:1000,oz:28.35,ounce:28.35,ounces:28.35,
+  lb:454,lbs:454,pound:454,pounds:454,ml:1,l:1000,liter:1000,litre:1000,
+  tbsp:15,tablespoon:15,tablespoons:15,tsp:5,teaspoon:5,teaspoons:5,
+  cup:0,cups:0,glass:250,glasses:250,can:0,cans:0,bottle:500,bottles:500,shot:44,shots:44,
+  mug:300,mugs:300,bowl:300,bowls:300,plate:350,plates:350,handful:30,handfuls:30,
+  scoop:60,scoops:60,dollop:30,dollops:30,bite:10,bites:10,splash:15,
+  slice:-1,slices:-1,piece:-1,pieces:-1,stick:-1,sticks:-1,serving:-1,servings:-1,serve:-1};
+function parseInput(raw){
+  let s=norm(raw);
+  // "12g carbs" → manual log
+  const man=s.match(/^(\d+(?:\.\d+)?)\s*g?(?:rams)?\s*(?:net\s*)?carbs?$/);
+  if(man)return{manual:+man[1]};
+  let qty=null,unit=null,size=1;
+  s=s.replace(/\b(small)\b/,()=>{size=.7;return"";}).replace(/\b(large)\b/,()=>{size=1.4;return"";})
+     .replace(/\bmedium\b/,"").replace(/\s+/g," ").trim();
+  // leading number/fraction/word:  "2", "1.5", "1/2", "half", "a couple"
+  let m=s.match(/^(\d+(?:\.\d+)?|\d+\s*\/\s*\d+)\s+(.+)$/);
+  if(m){qty=m[1].includes("/")?(()=>{const[p,q]=m[1].split("/");return +p/+q;})():+m[1];s=m[2];}
+  else{
+    m=s.match(/^([a-z]+)\s+(.+)$/);
+    if(m&&NUMWORDS[m[1]]!==undefined&&m[2]!=="carb"&&m[2]!=="carbs"){qty=NUMWORDS[m[1]];s=m[2];}
+  }
+  // "100g rice" / "100 g of rice" style: number glued to unit
+  m=s.match(/^(\d+(?:\.\d+)?)\s*(g|kg|ml|l|oz|lb|lbs)\s+(?:of\s+)?(.+)$/);
+  if(qty===null&&m){qty=+m[1];unit=m[2];s=m[3];}
+  if(qty===null){m=raw.toLowerCase().match(/^(\d+(?:\.\d+)?)(g|kg|ml|l|oz|lb|lbs)\b\s*(?:of\s+)?(.*)$/);
+    if(m&&m[3]){qty=+m[1];unit=m[2];s=norm(m[3]);}}
+  // unit word after qty: "2 cups of milk", "3 slices of bacon", "a handful of almonds"
+  m=s.match(/^([a-z]+)\s+(?:of\s+)?(.+)$/);
+  if(m&&UNITS[m[1]]!==undefined&&!unit){unit=m[1];s=m[2];}
+  s=s.replace(/^of\s+/,"").trim();
+  return{qty,unit,size,food:s,full:norm(raw)};
+}
+function gramsFor(p,e){
+  const serv=e.serv,liquid=e.L;
+  let g;
+  let q=p.qty===null?1:p.qty;
+  if(p.unit){
+    const uw=sing(p.unit);
+    let u=UNITS[p.unit];
+    if(e.unit&&(e.unit===uw||e.unit.startsWith(uw)))g=q*serv; // "bowl of cereal", "glass of wine" → that food's own bowl/glass
+    else if(u===-1)g=q*serv;                  // slice/piece → the food's own serving
+    else if(p.unit.startsWith("cup"))g=q*(liquid?240:140);
+    else if(p.unit.startsWith("can"))g=q*(liquid?355:400);
+    else g=q*u;
+  }else{
+    if(p.qty===null&&serv<=12&&e.nc100*serv/100<1.5&&!["tsp","tbsp","clove"].includes(e.unit))
+      q=Math.min(5,Math.max(1,Math.floor(60/serv))); // bare "grapes" → a realistic few; big-hit pieces (Freddo, lollipop) stay at one
+    g=q*serv;
+  }
+  return g*p.size;
+}
+
+/* ═══ PHRASING ═══ */
+const FR={0.25:"¼",0.33:"⅓",0.5:"½",0.66:"⅔",0.75:"¾"};
+function niceQty(n){
+  if(n>=3)return String(Math.round(n));
+  const whole=Math.floor(n),rem=n-whole;
+  let fk=null,fd=1;
+  for(const k in FR){const d=Math.abs(rem-k);if(d<fd){fd=d;fk=k;}}
+  if(fd<=.09&&fk){const f=FR[fk];return whole?whole+f:f;}
+  if(rem<.13)return String(whole||1);
+  return (Math.round(n*10)/10).toString();
+}
+const NOPLURAL=["tbsp","tsp","medium serve","McFlurry","McMuffin","half-cup","quarter-cup"];
+function pluralize(u){
+  if(NOPLURAL.includes(u)||/s$/.test(u))return u;
+  if(/y$/.test(u))return u.slice(0,-1)+"ies";
+  if(/(ch|sh|ss|x)$/.test(u))return u+"es";
+  return u+"s";
+}
+function unitPhrase(e,grams){
+  const n=grams/e.serv;
+  const u=e.unit||"serving";
+  const many=niceQty(n);
+  return many+" "+(n>1.05?pluralize(u):u);
+}
+const r1=x=>Math.round(x*10)/10;
+const fmtG=x=>{const v=r1(x);return (v<1&&v>0?v:Math.round(v*10)/10)+"g";};
+
+/* ═══ LABEL PARSER ═══
+   AU/NZ panels: "Carbohydrate" already EXCLUDES fibre, columns per-serving + per-100g.
+   US panels: "Total Carbohydrate" INCLUDES fiber, numbers are per-serving. */
+function parseLabel(text){
+  const lines=text.replace(/\|/g," ").split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  const gNums=l=>(l.match(/(\d+(?:[.,]\d+)?)\s*g\b/gi)||[]).map(x=>parseFloat(x.replace(",",".")));
+  const anyNums=l=>(l.match(/\d+(?:[.,]\d+)?/g)||[]).map(x=>parseFloat(x.replace(",",".")));
+  let servG=null,carb=null,fibre=null,us=false;
+  for(const raw of lines){
+    const s=raw.toLowerCase();
+    if(servG===null&&/serving size|per serve|serve size|serving:/.test(s)){
+      const m=s.match(/(\d+(?:[.,]\d+)?)\s*(g|ml)\b/g);
+      if(m)servG=parseFloat(m[m.length-1]);
+    }
+    if(/total carbohydrate/.test(s))us=true;
+    if(carb===null&&/carbohydrat/.test(s)&&!/fibre|fiber|which/.test(s)){
+      const n=gNums(raw).length?gNums(raw):anyNums(raw).filter(x=>x>0&&x<200);
+      if(n.length)carb=n.slice(0,2);
+    }
+    if(fibre===null&&/fibre|fiber/.test(s)){
+      const n=gNums(raw).length?gNums(raw):anyNums(raw).filter(x=>x>=0&&x<100);
+      if(n.length)fibre=n.slice(0,2);
+    }
+  }
+  if(!carb)return null;
+  function pick(pair){ // -> {serve,per100}
+    if(!pair)return{};
+    if(pair.length>=2){
+      const[a,b]=pair;
+      if(servG){const f=servG/100;
+        return Math.abs(a-b*f)<=Math.abs(b-a*f)?{serve:a,per100:b}:{serve:b,per100:a};}
+      return{serve:Math.min(a,b),per100:Math.max(a,b)};
+    }
+    return us?{serve:pair[0]}:{per100:pair[0]};
+  }
+  const c=pick(carb),f=pick(fibre);
+  if(us){
+    if(c.serve!=null)c.serve=Math.max(0,c.serve-(f.serve||0));
+    if(c.per100!=null)c.per100=Math.max(0,c.per100-(f.per100||0));
+  }
+  let per100=c.per100!=null?c.per100:(c.serve!=null&&servG?c.serve/servG*100:null);
+  if(per100==null||per100>100||per100<0)return null; // >100g carbs per 100g = misread (kJ grabbed etc.)
+  const sG=servG||100;
+  return{nc100:r1(per100),servG:sG,perServe:r1(per100*sG/100),us};
+}
+
+/* ═══ STATE ═══ */
+const K_BUDGET="ketocheck.budget",K_LOG="ketocheck.log",
+      K_HIST="ketocheck.hist",K_FIRST="ketocheck.first",K_BEST="ketocheck.best";
+let budget=+(localStorage.getItem(K_BUDGET)||20);
+let hist={};try{hist=JSON.parse(localStorage.getItem(K_HIST)||"{}")}catch(e){}
+if(!localStorage.getItem(K_FIRST))localStorage.setItem(K_FIRST,String(Date.now()));
+const firstUse=new Date(+localStorage.getItem(K_FIRST));
+function dateKey(d){return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+function todayKey(){return dateKey(new Date());}
+function saveHist(){localStorage.setItem(K_HIST,JSON.stringify(hist));}
+function loadLog(){
+  try{const o=JSON.parse(localStorage.getItem(K_LOG)||"{}");
+    if(o.day===todayKey())return o.items||[];
+    if(o.day&&o.items&&o.items.length){ // a past day's log → fold into history
+      hist[o.day]=Math.round(o.items.reduce((a,i)=>a+i.c,0)*10)/10;saveHist();
+    }
+  }catch(e){}
+  return [];
+}
+let log=loadLog();
+function saveLog(){localStorage.setItem(K_LOG,JSON.stringify({day:todayKey(),items:log}));}
+const used=()=>log.reduce((a,i)=>a+i.c,0);
+
+/* ═══ RENDER ═══ */
+const $=id=>document.getElementById(id);
+function renderBudget(){
+  const u=used(),left=Math.max(0,budget-u);
+  $("leftG").textContent=(Math.round(left*10)/10)+"g";
+  $("budgetG").textContent=budget;
+  const t=$("ticks");t.innerHTML="";
+  const n=Math.max(10,Math.round(budget));
+  const per=budget/n;
+  for(let i=0;i<n;i++){
+    const s=document.createElement("span");
+    if(u>=per*(i+.5)){s.className="f"+(u>budget?" over":(i+1)/n>.7?" warn":"");}
+    t.appendChild(s);
+  }
+}
+function renderLog(){
+  const ul=$("logList");ul.innerHTML="";
+  if(!log.length){const li=document.createElement("li");li.className="empty";
+    li.style.cssText="background:none;border:none;padding:4px 2px";
+    li.textContent="Nothing yet — check a food above, then hit “I ate it”.";ul.appendChild(li);return;}
+  log.forEach((it,i)=>{
+    const li=document.createElement("li");
+    const nm=document.createElement("span");nm.textContent=it.n;
+    const g=document.createElement("span");g.className="g num";g.textContent=fmtG(it.c);
+    const x=document.createElement("button");x.textContent="✕";x.title="remove";
+    x.onclick=()=>{log.splice(i,1);saveLog();renderAll();};
+    li.append(nm,g,x);ul.appendChild(li);
+  });
+}
+
+/* ketosis estimate */
+function ketoState(){
+  const u=used();
+  let days=0;
+  const first=new Date(firstUse.getFullYear(),firstUse.getMonth(),firstUse.getDate());
+  for(let i=1;i<=60;i++){
+    const d=new Date();d.setDate(d.getDate()-i);
+    if(d<first)break;
+    if((hist[dateKey(d)]||0)<=budget)days++;else break;
+  }
+  const blown=u>budget*1.75,over=u>budget;
+  let st;
+  if(blown)st="out";
+  else if(over)st="risk";
+  else st=days>=2?"in":"adapt";
+  return{days,st,u};
+}
+function renderKeto(){
+  const k=ketoState(),p=$("ketoPanel");
+  p.classList.remove("k-in","k-adapt","k-risk","k-out");
+  p.classList.add("k-"+k.st);
+  let title,msg;
+  if(k.st==="in"){title="IN KETOSIS";
+    msg=k.days+" full "+(k.days===1?"day":"days")+" under budget and today's on track. Keep the flame lit.";}
+  else if(k.st==="adapt"){title="GETTING INTO KETOSIS";
+    msg="Day "+(k.days+1)+" of about 3. Stay under "+budget+"g and the flame lights.";}
+  else if(k.st==="risk"){title="FLAME FLICKERING";
+    msg="You're over budget today. Stop the carbs now and you can still hold on.";}
+  else{title="OUT OF KETOSIS";
+    msg="Today knocked you out ("+fmtG(k.u)+"). Start clean now — about 2 good days gets you back in.";}
+  $("ketoTitle").textContent=title;$("ketoMsg").textContent=msg;
+  const best=Math.max(+(localStorage.getItem(K_BEST)||0),k.days);
+  localStorage.setItem(K_BEST,String(best));
+  $("ketoBest").textContent=best>=2?"best streak: "+best+" days":"";
+}
+function renderWeek(){
+  const w=$("weekBars");w.innerHTML="";
+  const days=[];let max=budget*1.4;
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const t=i===0?used():(hist[dateKey(d)]||0);
+    days.push({d,t});if(t>max)max=t;
+  }
+  const line=document.createElement("div");line.className="wline";
+  line.style.bottom=(21+Math.round(budget/max*64))+"px";
+  line.title=budget+"g budget";w.appendChild(line);
+  days.forEach(o=>{
+    const col=document.createElement("div");col.className="wcol";
+    const bar=document.createElement("div");
+    bar.className="wbar"+(o.t>budget?" over":"")+(dateKey(o.d)===todayKey()?" today":"");
+    bar.style.height=Math.max(4,Math.round(o.t/max*64))+"px";
+    bar.title=fmtG(o.t);
+    const lab=document.createElement("span");lab.textContent="SMTWTFS"[o.d.getDay()];
+    col.append(bar,lab);w.appendChild(col);
+  });
+}
+function renderAll(){renderBudget();renderLog();renderKeto();renderWeek();}
+
+/* craving swaps */
+const SWAPS=[
+[/bread|toast|wrap|bun\b|roll\b|bagel|muffin|crumpet/,"keto bread (Helga's Lower Carb is in most supermarkets) or a lettuce wrap"],
+[/chip|crisp|fries|pretzel|popcorn|twistie|cheezel|cracker/,"pork crackling or a handful of salted nuts"],
+[/chocolate|choc\b|candy|lolly|lollies|gummy|snake|freddo|cadbury/,"85% dark chocolate or sugar-free choc (Vitawerx, Well Naturally)"],
+[/coke|soda|soft drink|juice|lemonade|slurpee|cordial|fanta|sprite/,"Coke No Sugar, a zero V, or sparkling water"],
+[/pasta|noodle|spaghetti|goreng|ramen|mac and/,"konjac (shirataki) noodles or zoodles"],
+[/\brice\b/,"cauliflower rice — it's in the freezer aisle"],
+[/ice cream|gelato|magnum|cornetto|mcflurry|sundae|gaytime/,"Halo Top or Denada sugar-free tubs"],
+[/cereal|weetbix|oat|granola/,"Greek yogurt with berries and nuts"],
+[/beer\b|cider/,"a light beer, dry wine, or vodka soda"],
+[/cake|biscuit|cookie|donut|brownie|\bpie\b|pastry|tim tam|scone|lamington/,"berries with whipped cream, or a fat bomb"],
+[/\bmilk\b/,"unsweetened almond milk"],
+[/potato|mash\b/,"mashed or roasted cauliflower"],
+];
+function swapFor(text){for(const[re,s]of SWAPS)if(re.test(text))return s;return null;}
+function setSwap(s){const el=$("cSwap");
+  if(s){el.innerHTML="Craving fix: <b>"+s+"</b>.";el.style.display="";}else el.style.display="none";}
+
+/* verdict */
+let current=null;
+function showCard(tier,foodLine,word,say,how,logItem,isGuess){
+  const c=$("card");
+  c.className="card show t-"+tier;
+  $("cSwap").style.display="none";
+  $("guessTag").hidden=!isGuess;
+  $("cFood").innerHTML=foodLine;
+  $("cWord").textContent=word;
+  $("cSay").innerHTML=say;
+  $("cHow").innerHTML=how||"";
+  $("cHow").style.display=how?"":"none";
+  const acts=$("cActions");acts.innerHTML="";
+  if(logItem){
+    const b=document.createElement("button");b.className="btn";b.textContent="I ate it — log "+fmtG(logItem.c);
+    b.onclick=()=>{log.push({n:logItem.n,c:r1(logItem.c)});saveLog();renderAll();
+      const kp=$("ketoPanel");kp.classList.remove("pop");void kp.offsetWidth;kp.classList.add("pop");
+      b.remove();const ok=document.createElement("span");ok.className="logged-note";
+      ok.textContent="Logged. "+(Math.round(Math.max(0,budget-used())*10)/10)+"g left today.";acts.appendChild(ok);};
+    acts.appendChild(b);
+  }
+}
+function pct(c){return Math.round(c/budget*100);}
+function analyse(raw){
+  const p=parseInput(raw);
+  if(p.manual!==undefined){
+    showCard(p.manual<=budget*.25?"ok":"care","Manual entry","LOGGING "+fmtG(p.manual),
+      "That’s <b>"+pct(p.manual)+"%</b> of your day.","",{n:"manual entry",c:p.manual});
+    return;
+  }
+  let e=null,entry=findFood(p.food)||findFood(p.full),isGuess=false,guessLabel="";
+  if(entry){e={names:entry[0].split("|"),nc100:entry[1],serv:entry[2],unit:entry[3],L:entry[4]==="L"};}
+  else{const fb=fallbackFood(p.food||p.full);
+    if(fb){e=fb;isGuess=true;guessLabel=fb.guessLabel;e.L=false;}}
+  if(!e){
+    showCard("unk","","Hmm, don’t know that one.",
+      "Quick gut check: <b>sweet or starchy = skip it.</b> Meat, cheese, eggs, green veg, or fat = you’re fine.",
+      "If you know the carbs, type them like “<b>12g carbs</b>” and I’ll log it.",null,false);
+    return;
+  }
+  const grams=gramsFor(p,e);
+  judge(e,grams,{
+    qtyLabel:unitPhrase(e,grams),
+    itemName:e.names[0]+((p.qty!==null||p.unit||p.size!==1)?" ("+unitPhrase(e,grams)+")":""),
+    note:isGuess?" <i>(guessing from “"+guessLabel+"”)</i>":"",
+    swapText:p.full,isGuess
+  });
+}
+/* shared verdict renderer — used by typed foods and scanned labels */
+function judge(e,grams,opts){
+  opts=opts||{};
+  const carbs=e.nc100*grams/100;
+  const left=Math.max(0,budget-used());
+  const name=opts.name||e.names[0];
+  const qtyLabel=opts.qtyLabel||unitPhrase(e,grams);
+  const isGuess=!!opts.isGuess;
+  const foodLine="<b>"+name+"</b> · "+qtyLabel+
+    " · <span class='num'>"+fmtG(carbs)+"</span> net carbs"+(opts.note||"");
+  // how-much-can-I-have helper
+  let how="";
+  if(e.nc100<=4&&(!e.L||e.nc100<=1)){
+    how="Carbs stay low no matter how much you have. Keto-safe.";
+  }else{
+    const target=Math.min(Math.max(left,0),Math.max(budget*.25,3)); // a "safe bite" ≈ ¼ day
+    const safeG=target>0?target/e.nc100*100:0;
+    if(safeG>=15&&safeG<grams*4){
+      how="Want just a taste? <b>"+unitPhrase(e,safeG)+"</b> keeps it to about "+fmtG(target)+".";
+    }else if(safeG<15&&safeG>0){
+      how="Even a small amount is expensive here — <b>"+unitPhrase(e,Math.max(safeG,e.serv*.1))+
+        "</b> already costs "+fmtG(e.nc100*Math.max(safeG,e.serv*.1)/100)+".";
+    }
+  }
+  const item={n:opts.itemName||name+" ("+qtyLabel+")",c:carbs};
+  const sw=swapFor(norm(name+" "+(opts.swapText||"")));
+  if(e.nc100<=4&&carbs<=6&&(!e.L||e.nc100<=1)){
+    showCard("go",foodLine,"GO FOR IT.",
+      "Basically free. Eat until you’re satisfied — this is exactly what keto food looks like.",how,item,isGuess);
+  }else if(carbs<=budget*.2){
+    showCard("ok",foodLine,"YOU’RE FINE.",
+      "<b>"+fmtG(carbs)+"</b> — a small dent, just <b>"+pct(carbs)+"%</b> of your day. Enjoy it.",how,item,isGuess);
+  }else if(carbs<=budget*.4&&carbs<=left){
+    showCard("care",foodLine,"OK — BUT STOP THERE.",
+      "<b>"+fmtG(carbs)+"</b> is <b>"+pct(carbs)+"%</b> of your whole day. Have this amount and be done. No seconds.",how,item,isGuess);
+    setSwap(sw);
+  }else if(carbs<=left){
+    showCard("care",foodLine,"THIS IS MOST OF YOUR DAY.",
+      "<b>"+fmtG(carbs)+"</b> = <b>"+pct(carbs)+"%</b> of your budget. It fits — barely — but everything else today has to be near-zero.",how,item,isGuess);
+    setSwap(sw);
+  }else{
+    const over=carbs>budget?"That’s <b>more than your entire daily budget</b> in one sitting.":
+      "You’ve only got <b>"+fmtG(left)+"</b> left today — this blows straight past it.";
+    showCard("skip",foodLine,"SKIP IT.",
+      "<b>"+fmtG(carbs)+"</b> net carbs. "+over,how,item,isGuess);
+    setSwap(sw);
+  }
+}
+
+/* ═══ WIRING ═══ */
+let deb=null;
+$("q").addEventListener("input",ev=>{
+  clearTimeout(deb);
+  const v=ev.target.value.trim();
+  if(!v){$("card").className="card";return;}
+  deb=setTimeout(()=>analyse(v),260);
+});
+$("q").addEventListener("keydown",ev=>{if(ev.key==="Enter"){clearTimeout(deb);const v=ev.target.value.trim();if(v)analyse(v);}});
+["2 eggs","avocado","banana","big mac","glass of wine","handful of almonds"].forEach(x=>{
+  const b=document.createElement("button");b.textContent=x;
+  b.onclick=()=>{$("q").value=x;analyse(x);$("q").focus();};
+  $("chips").appendChild(b);
+});
+$("editBudget").onclick=()=>{
+  const v=prompt("Daily net-carb budget in grams (20 is classic keto):",budget);
+  const n=parseFloat(v);
+  if(n&&n>0&&n<300){budget=n;localStorage.setItem(K_BUDGET,String(n));renderAll();}
+};
+
+/* save · backup · restore */
+function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");
+  clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("show"),2400);}
+$("saveBtn").onclick=()=>{saveLog();saveHist();
+  toast("Saved — "+log.length+" item"+(log.length===1?"":"s")+" today. (It also auto-saves on every change.)");};
+$("backupBtn").onclick=()=>{
+  const data={ketocheck:1,budget,log:{day:todayKey(),items:log},hist,
+    best:+(localStorage.getItem(K_BEST)||0),first:+localStorage.getItem(K_FIRST),
+    exported:new Date().toISOString()};
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:"application/json"}));
+  a.download="ketocheck-backup.json";a.click();URL.revokeObjectURL(a.href);
+  toast("Backup downloaded. Keep it somewhere safe.");
+};
+$("restoreBtn").onclick=()=>$("restoreFile").click();
+$("restoreFile").onchange=ev=>{
+  const f=ev.target.files[0];if(!f)return;
+  f.text().then(txt=>{
+    const d=JSON.parse(txt);
+    if(d.ketocheck!==1)throw 0;
+    if(d.budget){budget=d.budget;localStorage.setItem(K_BUDGET,String(budget));}
+    if(d.hist)hist=d.hist;
+    if(d.best)localStorage.setItem(K_BEST,String(d.best));
+    if(d.first)localStorage.setItem(K_FIRST,String(d.first));
+    if(d.log&&d.log.items){
+      if(d.log.day===todayKey())log=d.log.items;
+      else if(d.log.day)hist[d.log.day]=Math.round(d.log.items.reduce((a,i)=>a+i.c,0)*10)/10;
+    }
+    saveHist();saveLog();renderAll();toast("Backup restored.");
+  }).catch(()=>toast("That file didn't look like a Keto Check backup."));
+  ev.target.value="";
+};
+
+/* label scanner (camera → OCR → verdict) */
+let tessP=null;
+function loadTess(){
+  if(window.Tesseract)return Promise.resolve();
+  if(tessP)return tessP;
+  tessP=new Promise((res,rej)=>{
+    const s=document.createElement("script");
+    s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+    s.onload=res;s.onerror=()=>{tessP=null;rej(new Error("load"))};
+    document.head.appendChild(s);
+  });
+  return tessP;
+}
+function scanMsg(word,say){showCard("unk","",word,say,"",null,false);}
+function scanForm(msg){
+  showCard("unk","","LET’S DO IT BY HAND.",
+    msg||"Couldn’t read that photo. Type the two numbers off the label — that’s all I need.","",null,false);
+  const acts=$("cActions");
+  acts.innerHTML='<div class="mform">'+
+    '<label>Carbs per 100g (off the label)<input id="mCarb" type="number" inputmode="decimal" min="0" max="100" step="0.1"></label>'+
+    '<label>Serving size in grams (optional)<input id="mServ" type="number" inputmode="decimal" min="1" max="1000"></label>'+
+    '<span class="hint">US-style label? Use Total Carbohydrate minus Dietary Fiber.</span>'+
+    '<button class="btn" id="mGo">Get verdict</button></div>';
+  $("mGo").onclick=()=>{
+    const c=parseFloat($("mCarb").value);
+    if(!(c>=0&&c<=100)){toast("Enter the carbs-per-100g number from the label.");return;}
+    const s=parseFloat($("mServ").value)||100;
+    judge({names:["label (typed in)"],nc100:c,serv:s,unit:"serving",L:false},s,
+      {qtyLabel:"1 serving ("+s+"g)",itemName:"label item (1 serving)",swapText:""});
+  };
+}
+function prepCanvas(img,maxDim,threshold){
+  const sc=Math.min(1,maxDim/Math.max(img.width,img.height));
+  const cv=document.createElement("canvas");
+  cv.width=Math.round(img.width*sc);cv.height=Math.round(img.height*sc);
+  const g=cv.getContext("2d");
+  g.drawImage(img,0,0,cv.width,cv.height);
+  const d=g.getImageData(0,0,cv.width,cv.height),a=d.data;
+  let min=255,max=0;
+  for(let i=0;i<a.length;i+=4){
+    const y=(a[i]*0.299+a[i+1]*0.587+a[i+2]*0.114)|0;
+    a[i]=a[i+1]=a[i+2]=y;
+    if(y<min)min=y;if(y>max)max=y;
+  }
+  const range=Math.max(1,max-min);
+  for(let i=0;i<a.length;i+=4){
+    let y=Math.round((a[i]-min)*255/range);
+    if(threshold!==undefined)y=y>threshold?255:0;
+    a[i]=a[i+1]=a[i+2]=y;
+  }
+  g.putImageData(d,0,0);
+  return cv;
+}
+async function scanImage(file){
+  scanMsg("READING LABEL…","Hold on — takes a few seconds, longer on the first scan.");
+  try{await loadTess();}
+  catch(err){scanForm("The photo reader can’t load on this page (it’s blocked or you’re offline). No drama — type the label’s numbers instead:");return;}
+  try{
+    const img=await createImageBitmap(file);
+    // pass 1: grayscale + contrast stretch; pass 2: hard black/white
+    let lab=null;
+    for(const th of [undefined,160]){
+      const cv=prepCanvas(img,2000,th);
+      const r=await Tesseract.recognize(cv,"eng");
+      lab=parseLabel(r.data.text||"");
+      if(lab)break;
+    }
+    if(!lab){scanForm();return;}
+    judge({names:["scanned label"],nc100:lab.nc100,serv:lab.servG,unit:"serving",L:false},
+      lab.servG,{
+        qtyLabel:"1 serving ("+lab.servG+"g)",
+        itemName:"scanned label (1 serving)",
+        note:" <i>(read from your photo: "+lab.nc100+"g net per 100g"+(lab.us?", US-style label":"")+" — double-check me)</i>",
+        swapText:""
+      });
+  }catch(err){
+    scanForm("Something went wrong with that photo. Type the label’s numbers instead:");
+  }
+}
+$("scanBtn").onclick=()=>$("camInput").click();
+$("camInput").onchange=ev=>{const f=ev.target.files[0];if(f)scanImage(f);ev.target.value="";};
+
+/* sandboxed page (claude.ai artifact frame): storage may not survive closing */
+(function(){
+  let framed=false;
+  try{framed=window.top!==window.self;}catch(e){framed=true;}
+  if(framed){
+    const w=document.createElement("div");
+    w.className="warnbar";
+    w.innerHTML="Heads-up: on this page your log <b>may not survive closing the app</b> and the photo scanner is blocked. For the full version, use the desktop app or the hosted address — or tap <b>Backup file</b> before you leave.";
+    document.querySelector(".topbar").after(w);
+  }
+})();
+
+renderAll();
+</script>
+<script>if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js");</script></body></html>
