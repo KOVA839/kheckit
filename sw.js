@@ -1,4 +1,4 @@
-﻿const C="ketocheck-v1";
+const C="ketocheck-v2";
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./keto-icon-192.png"])));self.skipWaiting();});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.map(x=>x!==C&&caches.delete(x)))));self.clients.claim();});
 self.addEventListener("fetch",e=>{
