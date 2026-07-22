@@ -376,8 +376,61 @@ body{background:var(--paper);color:var(--ink);
 .mf-empty{font-size:13.5px;color:var(--muted);padding:2px}
 .cprot{color:var(--muted)}
 
+/* ── daily habits: water · sleep · move ── */
+.habits{margin-top:30px}
+.habits h2{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.habits .sub{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.hcard{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px 16px}
+.hhead{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.hhead .hi{font-size:18px;line-height:1}
+.hhead .ht{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.hhead .hg{margin-left:auto;background:none;border:none;color:var(--muted);font:inherit;font-size:12px;
+  cursor:pointer;padding:2px 4px;border-radius:6px;text-decoration:underline dotted}
+.hhead .hg:hover{color:var(--gold)}
+.hbig{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.hbig small{font-size:14px;font-weight:600;color:var(--muted);margin-left:3px}
+.hsub{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+.hbar{height:9px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:10px}
+.hbar i{display:block;height:100%;border-radius:99px;width:0;transition:width .4s}
+.hbar.w i{background:linear-gradient(90deg,#3E9BD8,#7FD4F0)}
+.hbar.s i{background:linear-gradient(90deg,#6A5AB8,#A99BE6)}
+.hbar.m i{background:linear-gradient(90deg,#C0603A,var(--gold))}
+.hbar i.hit{background:var(--go)}
+.glasses{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
+.glass{width:19px;height:25px;border-radius:3px 3px 7px 7px;border:2px solid var(--line);background:var(--paper);
+  cursor:pointer;padding:0;position:relative;overflow:hidden;transition:transform .12s}
+.glass:hover{transform:translateY(-2px)}
+.glass.on{border-color:#3E9BD8;background:linear-gradient(180deg,#7FD4F0,#3E9BD8)}
+.glass.extra{border-color:var(--go);background:var(--go)}
+.hrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.hbtn{background:var(--ink);color:var(--paper);border:none;font:inherit;font-weight:700;font-size:13.5px;
+  padding:9px 14px;border-radius:10px;cursor:pointer}
+.hbtn:hover{opacity:.88}
+.hbtn.ghost{background:none;color:var(--muted);border:1px solid var(--line)}
+.hbtn.ghost:hover{color:var(--ink);border-color:var(--gold)}
+.hbtn.wide{flex:1}
+.nights{display:flex;gap:4px;align-items:flex-end;height:34px;margin-top:11px}
+.nights span{flex:1;border-radius:2px 2px 0 0;background:#6A5AB8;min-height:3px;opacity:.85}
+.nights span.none{background:var(--line)}
+.nights span.good{background:var(--go)}
+.exlist{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.ex-item{display:flex;align-items:center;gap:9px;font-size:13.5px;background:var(--paper);
+  border:1px solid var(--line);border-radius:9px;padding:7px 10px}
+.ex-item .exm{margin-left:auto;color:var(--muted);font-size:12.5px}
+.ex-item .exd{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 2px}
+.ex-item .exd:hover{color:var(--skip)}
+.expick{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:7px;margin-bottom:16px}
+.expick button{padding:10px 4px;border-radius:11px;border:2px solid var(--line);background:var(--paper);
+  font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);cursor:pointer;line-height:1.3}
+.expick button.on{border-color:var(--gold);background:var(--gold-soft);color:var(--gold)}
+.quickmins{display:flex;gap:7px;margin:-6px 0 16px;flex-wrap:wrap}
+.quickmins button{flex:1;min-width:52px;padding:9px 4px;border-radius:10px;border:1px solid var(--line);
+  background:var(--paper);font:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.quickmins button:hover{border-color:var(--gold);color:var(--gold)}
+
 @media (prefers-reduced-motion: reduce){
-  .xpfloat,.cele-card,.banner,.sheet-card,.achv-item.just,.xpfill,.wtrackfill,.pfill{animation:none!important;transition:none!important}
+  .xpfloat,.cele-card,.banner,.sheet-card,.achv-item.just,.xpfill,.wtrackfill,.pfill,.hbar i,.glass{animation:none!important;transition:none!important}
 }
 </style>
 
@@ -453,6 +506,47 @@ body{background:var(--paper);color:var(--ink);
   <div class="log">
     <h2>Eaten today</h2>
     <ul id="logList"></ul>
+  </div>
+
+  <div class="habits">
+    <h2>Today's habits</h2>
+    <p class="sub" id="habitSub">Water, sleep and movement — the three that make keto easier.</p>
+    <div class="hgrid">
+
+      <div class="hcard" id="waterCard">
+        <div class="hhead"><span class="hi">💧</span><span class="ht">Water</span>
+          <button class="hg" id="waterGoalBtn" title="Change water goal">goal</button></div>
+        <div class="hbig num"><span id="waterL">0</span><small id="waterUnitTxt">L of 2L</small></div>
+        <p class="hsub" id="waterMsg"></p>
+        <div class="hbar w"><i id="waterFill"></i></div>
+        <div class="glasses" id="glasses"></div>
+        <div class="hrow">
+          <button class="hbtn wide" id="waterAdd">+ Add a glass</button>
+          <button class="hbtn ghost" id="waterSub">−</button>
+        </div>
+      </div>
+
+      <div class="hcard" id="sleepCard">
+        <div class="hhead"><span class="hi">😴</span><span class="ht">Sleep</span>
+          <button class="hg" id="sleepGoalBtn" title="Change sleep goal">goal</button></div>
+        <div class="hbig num"><span id="sleepH">–</span><small id="sleepUnitTxt">h last night</small></div>
+        <p class="hsub" id="sleepMsg"></p>
+        <div class="hbar s"><i id="sleepFill"></i></div>
+        <div class="nights" id="nights"></div>
+        <div class="hrow"><button class="hbtn wide" id="sleepLogBtn">Log last night 🌙</button></div>
+      </div>
+
+      <div class="hcard" id="moveCard">
+        <div class="hhead"><span class="hi">🏃</span><span class="ht">Exercise</span>
+          <button class="hg" id="moveGoalBtn" title="Change movement goal">goal</button></div>
+        <div class="hbig num"><span id="moveM">0</span><small id="moveUnitTxt">min today</small></div>
+        <p class="hsub" id="moveMsg"></p>
+        <div class="hbar m"><i id="moveFill"></i></div>
+        <div class="exlist" id="exList"></div>
+        <div class="hrow"><button class="hbtn wide" id="moveLogBtn">+ Log exercise</button></div>
+      </div>
+
+    </div>
   </div>
 
   <div class="myfoods">
@@ -1168,7 +1262,9 @@ function parseLabel(text){
 const K_BUDGET="ketocheck.budget",K_LOG="ketocheck.log",
       K_HIST="ketocheck.hist",K_FIRST="ketocheck.first",K_BEST="ketocheck.best",
       K_STATS="ketocheck.stats",K_WEIGHT="ketocheck.weight",K_PLAN="ketocheck.plan",
-      K_PGOAL="ketocheck.pgoal",K_FOODS="ketocheck.foods";
+      K_PGOAL="ketocheck.pgoal",K_FOODS="ketocheck.foods",
+      K_WATER="ketocheck.water",K_SLEEP="ketocheck.sleep",K_MOVE="ketocheck.move",
+      K_HGOAL="ketocheck.hgoals";
 let budget=+(localStorage.getItem(K_BUDGET)||20);
 let hist={};try{hist=JSON.parse(localStorage.getItem(K_HIST)||"{}")}catch(e){}
 if(!localStorage.getItem(K_FIRST))localStorage.setItem(K_FIRST,String(Date.now()));
@@ -1192,6 +1288,25 @@ function setPlan(t){planTier=t;localStorage.setItem(K_PLAN,t);}
 let pgoal=+(localStorage.getItem(K_PGOAL)||0);
 let myFoods=[];try{myFoods=JSON.parse(localStorage.getItem(K_FOODS)||"[]")}catch(e){}
 function saveFoods(){localStorage.setItem(K_FOODS,JSON.stringify(myFoods));}
+
+/* habits: water (glasses/day) · sleep (hours/night) · move (workouts/day) */
+let waterLog={};try{waterLog=JSON.parse(localStorage.getItem(K_WATER)||"{}")}catch(e){}
+let sleepLog={};try{sleepLog=JSON.parse(localStorage.getItem(K_SLEEP)||"{}")}catch(e){}
+let moveLog={};try{moveLog=JSON.parse(localStorage.getItem(K_MOVE)||"{}")}catch(e){}
+let hgoal={water:8,sleep:8,move:30};
+try{hgoal=Object.assign(hgoal,JSON.parse(localStorage.getItem(K_HGOAL)||"{}"))}catch(e){}
+function keyDate(k){const p=String(k).split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+function pruneDays(o){ // keep ~120 days so storage never creeps
+  const ks=Object.keys(o);if(ks.length<130)return o;
+  const cut=Date.now()-120*864e5;
+  for(const k of ks){const d=keyDate(k);if(isNaN(d)||d.getTime()<cut)delete o[k];}
+  return o;
+}
+function saveWater(){localStorage.setItem(K_WATER,JSON.stringify(pruneDays(waterLog)));}
+function saveSleep(){localStorage.setItem(K_SLEEP,JSON.stringify(pruneDays(sleepLog)));}
+function saveMove(){localStorage.setItem(K_MOVE,JSON.stringify(pruneDays(moveLog)));}
+function saveHGoals(){localStorage.setItem(K_HGOAL,JSON.stringify(hgoal));}
+stats.wDays=stats.wDays||{};stats.sDays=stats.sDays||{};stats.mDays=stats.mDays||{};
 
 function loadLog(){
   try{const o=JSON.parse(localStorage.getItem(K_LOG)||"{}");
@@ -1298,7 +1413,7 @@ function renderWeek(){
 }
 function renderAll(){renderBudget();renderLog();renderKeto();renderWeek();
   renderLevel();renderWeight();renderAchievements();renderInsights();renderPlanStatus();
-  renderProtein();renderMyFoods();}
+  renderProtein();renderMyFoods();renderWater();renderSleep();renderMove();}
 
 /* ═══ GAMIFY: XP · LEVELS · BADGES ═══ */
 const LEVELS=[
@@ -1361,6 +1476,12 @@ const BADGES=[
  {id:"half",e:"🎯",t:"Halfway There",d:"Halfway to your goal weight."},
  {id:"goal",e:"🏆",t:"Goal Crusher",d:"Hit your goal weight."},
  {id:"lvl5",e:"🎖️",t:"High Roller",d:"Reached level 5."},
+ {id:"hydrate",e:"💧",t:"Hydrated",d:"Hit your water goal for a day."},
+ {id:"hydrate7",e:"🌊",t:"Well Watered",d:"Hit your water goal on 7 days."},
+ {id:"rested",e:"😴",t:"Well Rested",d:"Logged a night of 7+ hours."},
+ {id:"move1",e:"🏃",t:"Move It",d:"Logged your first workout."},
+ {id:"move150",e:"💪",t:"Active Week",d:"150 active minutes in a week."},
+ {id:"trifecta",e:"🌟",t:"Trifecta",d:"Water, sleep and exercise all in one day."},
  {id:"founder",e:"🏅",t:"Founder",d:"A Lifetime supporter — thank you!"},
 ];
 function unlock(b,quiet){
@@ -1382,6 +1503,12 @@ function checkBadges(quiet){
     half:weight.goal!=null&&wp>=0.5,
     goal:weight.goal!=null&&wp>=1,
     lvl5:levelInfo(stats.xp).level>=5,
+    hydrate:waterDaysHit()>0,
+    hydrate7:waterDaysHit()>=7,
+    rested:Object.keys(sleepLog).some(k=>sleepLog[k]>=7),
+    move1:moveCount()>0,
+    move150:moveWeekMins()>=150,
+    trifecta:waterToday()>=hgoal.water&&sleepFor(todayKey())>=hgoal.sleep&&moveMinsToday()>=hgoal.move,
     founder:planTier==="lifetime",
   };
   for(const b of BADGES)if(cond[b.id])unlock(b,quiet);
@@ -1575,13 +1702,15 @@ function renderInsights(){
   wrap.classList.toggle("locked",!pro);
   $("insLockOver").hidden=pro;$("insLock").hidden=pro;
   $("insSub").textContent=pro?"Your last 30 days at a glance.":"Unlock 30-day trends, averages and keto-day counts with Pro.";
-  const d=insightsData(),wc=weightChange30();
+  const d=insightsData(),wc=weightChange30(),h30=habit30();
   const tiles=[
     ["Avg net carbs",fmtG(Math.round(d.avg*10)/10)],
     ["Keto days (30d)",d.ketoDays+' <small>/ '+d.logged+'</small>'],
     ["Best streak",d.best+' <small>days</small>'],
     weight.goal!=null?["Weight change",(wc<=-0.05?"▼ ":wc>=0.05?"▲ ":"")+fmtW(Math.abs(Math.round(wc*10)/10))]
                      :["Your level","Lv "+levelInfo(stats.xp).level],
+    ["Avg sleep (30d)",h30.sleep==null?"–":h30.sleep+' <small>h</small>'],
+    ["Active mins (30d)",h30.mins+' <small>min</small>'],
   ];
   $("insTiles").innerHTML=tiles.map(t=>'<div class="tile"><div class="k">'+t[0]+'</div><div class="v num">'+t[1]+'</div></div>').join("");
   const max=Math.max(budget*1.3,...d.days.map(x=>x.val));
@@ -1602,10 +1731,10 @@ const STORE={
 const CODES={"KHECKIT-PRO":"pro","KHECKIT-LIFE":"lifetime","FOUNDER":"lifetime"};
 const PLAN_DEFS=[
  {id:"free",name:"Starter",price:"Free",per:"forever",
-  feats:["Unlimited food checks","Daily carb budget & ketosis flame","7-day history","Levels, XP & achievements","Weight goal tracking","Label scanner","Backup & restore"],
+  feats:["Unlimited food checks","Daily carb budget & ketosis flame","Water, sleep & exercise trackers","7-day history","Levels, XP & achievements","Weight goal tracking","Label scanner","Backup & restore"],
   off:["30-day history & insights"]},
  {id:"pro",name:"Pro",price:"$19.99",per:"/year",alt:"or $2.99 / month",best:true,
-  feats:["Everything in Starter","<b>30-day history & insights</b>","Average carbs, keto days & trends","Early access to new features"]},
+  feats:["Everything in Starter","<b>30-day history & insights</b>","Average carbs, keto days & trends","30-day sleep & activity averages","Early access to new features"]},
  {id:"lifetime",name:"Lifetime",price:"$39",per:"once",alt:"one payment — yours forever",
   feats:["Everything in Pro, <b>forever</b>","No subscription, ever","All future Pro features","🏅 Founder badge"]},
 ];
@@ -1765,9 +1894,227 @@ function rotateIdea(all){const t=$("ideaTxt");if(t)t.textContent=pickIdea(all?AL
 function schedulePopup(){
   const wait=(4+Math.random()*4)*60000; // 4–8 min
   setTimeout(()=>{
-    if(!document.hidden){const m=pickIdea(currentMealSet());toast("💡 Keto idea: "+m);}
+    if(!document.hidden){
+      const nudge=habitNudge();
+      if(nudge&&Math.random()<0.4)toast(nudge);
+      else toast("💡 Keto idea: "+pickIdea(currentMealSet()));
+    }
     schedulePopup();
   },wait);
+}
+function habitNudge(){ // gentle reminders, only for what you're actually behind on
+  const out=[],h=new Date().getHours();
+  if(waterToday()<hgoal.water&&h>=7)out.push("💧 Water check — "+waterToday()+"/"+hgoal.water+" glasses. Grab one.");
+  if(moveMinsToday()<hgoal.move&&h>=10&&h<21)out.push("🏃 Still "+(hgoal.move-moveMinsToday())+" active minutes to go. A walk counts.");
+  if(sleepFor(todayKey())==null&&h<14)out.push("😴 Log last night's sleep — it explains a lot about today's cravings.");
+  return out.length?out[Math.floor(Math.random()*out.length)]:null;
+}
+
+/* ═══ DAILY HABITS: WATER · SLEEP · EXERCISE ═══ */
+const GLASS_ML=250;
+function bodyKg(){ // for calorie estimates — falls back to a sensible average
+  const c=curWeight();if(c==null)return 75;
+  return weight.unit==="lb"?c*0.4536:c;
+}
+function last7Keys(){const a=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);a.push(dateKey(d));}return a;}
+function last30Keys(){const a=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);a.push(dateKey(d));}return a;}
+function habit30(){ // rolled-up habit numbers for the Insights panel
+  const ks=last30Keys();
+  const sl=ks.map(k=>sleepLog[k]).filter(v=>v>0);
+  const mins=ks.reduce((a,k)=>a+moveMinsFor(k),0);
+  const gl=ks.map(k=>waterLog[k]).filter(v=>v>0);
+  return{
+    sleep:sl.length?Math.round(sl.reduce((a,b)=>a+b,0)/sl.length*10)/10:null,
+    mins,
+    water:gl.length?Math.round(gl.reduce((a,b)=>a+b,0)/gl.length*10)/10:null
+  };
+}
+
+/* ── water ── */
+function waterToday(){return waterLog[todayKey()]||0;}
+function litres(n){const l=n*GLASS_ML/1000;return(Math.round(l*100)/100).toString();}
+function setWater(n){
+  n=Math.max(0,Math.min(40,Math.round(n)));
+  const t=todayKey(),before=waterToday();
+  if(n===0)delete waterLog[t];else waterLog[t]=n;
+  saveWater();
+  if(n>=hgoal.water&&before<hgoal.water&&!stats.wDays[t]){
+    stats.wDays[t]=1;saveStats();awardXP(10);
+    toast("💧 Water goal hit — "+litres(n)+"L down. +10 XP");
+  }
+  renderWater();checkBadges();
+}
+function waterDaysHit(){return Object.keys(stats.wDays||{}).length;}
+function renderWater(){
+  if(!$("waterL"))return;
+  const n=waterToday(),g=hgoal.water,p=Math.min(100,Math.round(n/g*100));
+  $("waterL").textContent=litres(n);
+  $("waterUnitTxt").textContent="L of "+litres(g)+"L";
+  const f=$("waterFill");f.style.width=Math.max(n?4:0,p)+"%";f.classList.toggle("hit",n>=g);
+  $("waterMsg").textContent=
+    n===0?"Keto flushes water fast — start with a glass.":
+    n>=g?"Goal smashed. "+n+" glasses today. 💪":
+    (g-n)+" more glass"+(g-n===1?"":"es")+" to hit your goal ("+n+"/"+g+").";
+  const box=$("glasses");box.innerHTML="";
+  const show=Math.max(g,n);
+  for(let i=0;i<show;i++){
+    const b=document.createElement("button");
+    b.className="glass"+(i<n?(i>=g?" on extra":" on"):"");
+    b.title=(i+1)+" glass"+(i?"es":"")+" ("+litres(i+1)+"L)";
+    b.setAttribute("aria-label",b.title);
+    b.onclick=()=>setWater(n===i+1?i:i+1); // tap the last filled glass to undo it
+    box.appendChild(b);
+  }
+}
+
+/* ── sleep ── */
+function sleepFor(k){const v=sleepLog[k];return v==null?null:v;}
+function setSleep(h){
+  h=Math.max(0,Math.min(24,Math.round(h*10)/10));
+  const t=todayKey();
+  if(h<=0)delete sleepLog[t];else sleepLog[t]=h;
+  saveSleep();
+  if(h>0&&!stats.sDays[t]){stats.sDays[t]=1;saveStats();awardXP(8);}
+  renderSleep();checkBadges();
+  toast(h<=0?"Sleep cleared.":
+    h>=hgoal.sleep?"Well rested — "+h+"h. Cravings hate that. 😴":
+    h<6?"Logged "+h+"h. Short nights spike carb cravings — go gentle today.":
+    "Logged "+h+"h. Nearly there.");
+}
+function renderSleep(){
+  if(!$("sleepH"))return;
+  const t=todayKey(),h=sleepFor(t),g=hgoal.sleep;
+  $("sleepH").textContent=h==null?"–":(Math.round(h*10)/10);
+  $("sleepUnitTxt").textContent="h last night";
+  const f=$("sleepFill");
+  f.style.width=(h==null?0:Math.max(4,Math.min(100,Math.round(h/g*100))))+"%";
+  f.classList.toggle("hit",h!=null&&h>=g);
+  $("sleepMsg").textContent=
+    h==null?"How'd you sleep? Bad sleep makes carbs harder to resist.":
+    h>=g?"Full tank. Willpower runs on sleep.":
+    h>=6?"Decent. Aim for "+g+"h and cravings quiet down.":
+    "Rough night — expect extra hunger. Water and protein help.";
+  const nb=$("nights");nb.innerHTML="";
+  last7Keys().forEach(k=>{
+    const v=sleepFor(k),s=document.createElement("span");
+    s.className=v==null?"none":(v>=g?"good":"");
+    s.style.height=Math.max(3,Math.round((v||0)/10*30))+"px";
+    s.title=k+(v==null?": not logged":": "+v+"h");
+    nb.appendChild(s);
+  });
+}
+function sleepSheet(){
+  const cur=sleepFor(todayKey());
+  openSheet('<h3>How long did you sleep?</h3>'+
+    '<div class="quickmins" id="sQuick"></div>'+
+    '<label>Hours slept<input id="sIn" type="number" inputmode="decimal" min="0" max="24" step="0.5" placeholder="e.g. 7.5"></label>'+
+    '<div class="row"><button class="btn" id="sGo">Save</button><button class="btn ghost" id="sCancel">Cancel</button></div>');
+  if(cur!=null)$("sIn").value=cur;
+  const q=$("sQuick");
+  [5,6,7,8,9].forEach(h=>{const b=document.createElement("button");b.textContent=h+"h";
+    b.onclick=()=>{$("sIn").value=h;};q.appendChild(b);});
+  setTimeout(()=>$("sIn").focus(),60);
+  $("sCancel").onclick=closeSheet;
+  $("sGo").onclick=()=>{
+    const h=parseFloat($("sIn").value);
+    if(!(h>=0&&h<=24)){toast("Enter how many hours you slept.");return;}
+    closeSheet();setSleep(h);
+  };
+}
+
+/* ── exercise ── */
+const EX=[ // label, MET (calorie burn rate)
+ ["🚶 Walk",3.5],["🏃 Run",9.8],["🚴 Cycle",7.5],["🏋️ Weights",5.0],
+ ["🏊 Swim",7.0],["🧘 Yoga",3.0],["⚡ HIIT",8.5],["⚽ Sport",7.0],
+ ["🥾 Hike",6.0],["💃 Dance",5.5],["🧹 Housework",3.3],["🌿 Gardening",3.8]];
+function moveFor(k){return moveLog[k]||[];}
+function moveMinsFor(k){return moveFor(k).reduce((a,x)=>a+x.m,0);}
+function moveToday(){return moveFor(todayKey());}
+function moveMinsToday(){return moveMinsFor(todayKey());}
+function moveWeekMins(){return last7Keys().reduce((a,k)=>a+moveMinsFor(k),0);}
+function moveCount(){let n=0;for(const k in moveLog)n+=moveLog[k].length;return n;}
+function kcalFor(met,mins){return Math.round(met*bodyKg()*(mins/60));}
+function addMove(label,mins,met){
+  const t=todayKey(),before=moveMinsToday();
+  if(!moveLog[t])moveLog[t]=[];
+  moveLog[t].push({t:label,m:mins,k:kcalFor(met,mins)});
+  saveMove();
+  awardXP(10);
+  const after=moveMinsToday();
+  if(after>=hgoal.move&&before<hgoal.move&&!stats.mDays[t]){
+    stats.mDays[t]=1;saveStats();awardXP(15);
+    toast("🔥 "+after+" active minutes — daily move goal hit! +25 XP");
+  }else{
+    toast("Logged "+mins+" min of "+label.replace(/^\S+\s/,"")+" · +10 XP");
+  }
+  renderMove();checkBadges();
+}
+function delMove(i){
+  const t=todayKey();if(!moveLog[t])return;
+  moveLog[t].splice(i,1);
+  if(!moveLog[t].length)delete moveLog[t];
+  saveMove();renderMove();
+}
+function renderMove(){
+  if(!$("moveM"))return;
+  const items=moveToday(),mins=moveMinsToday(),g=hgoal.move;
+  const kcal=items.reduce((a,x)=>a+(x.k||0),0);
+  $("moveM").textContent=mins;
+  const f=$("moveFill");
+  f.style.width=(mins?Math.max(4,Math.min(100,Math.round(mins/g*100))):0)+"%";
+  f.classList.toggle("hit",mins>=g);
+  const wk=moveWeekMins();
+  $("moveMsg").textContent=
+    !mins?"Nothing yet today — even a 10-minute walk counts.":
+    mins>=g?"Goal done: "+mins+" min, about "+kcal+" cal burned. This week: "+wk+" min.":
+    (g-mins)+" min to go. This week: "+wk+" min.";
+  const box=$("exList");box.innerHTML="";
+  items.forEach((x,i)=>{
+    const el=document.createElement("div");el.className="ex-item";
+    const n=document.createElement("span");n.textContent=x.t;
+    const m=document.createElement("span");m.className="exm num";m.textContent=x.m+" min · ~"+x.k+" cal";
+    const d=document.createElement("button");d.className="exd";d.textContent="✕";d.title="remove";
+    d.onclick=()=>delMove(i);
+    el.append(n,m,d);box.appendChild(el);
+  });
+}
+let exPick=0,exMins=30;
+function moveSheet(){
+  exPick=0;exMins=30;
+  openSheet('<h3>Log exercise</h3>'+
+    '<div class="expick" id="exPick"></div>'+
+    '<div class="quickmins" id="exQuick"></div>'+
+    '<label>Minutes<input id="exMin" type="number" inputmode="numeric" min="1" max="600" step="1" value="30"></label>'+
+    '<div class="row"><button class="btn" id="exGo">Save workout</button><button class="btn ghost" id="exCancel">Cancel</button></div>');
+  const grid=$("exPick");
+  EX.forEach((e,i)=>{
+    const b=document.createElement("button");b.textContent=e[0];
+    b.onclick=()=>{exPick=i;[...grid.children].forEach((c,j)=>c.classList.toggle("on",j===i));};
+    grid.appendChild(b);
+  });
+  grid.children[0].classList.add("on");
+  const q=$("exQuick");
+  [10,20,30,45,60].forEach(m=>{const b=document.createElement("button");b.textContent=m+"m";
+    b.onclick=()=>{$("exMin").value=m;};q.appendChild(b);});
+  $("exCancel").onclick=closeSheet;
+  $("exGo").onclick=()=>{
+    const m=parseFloat($("exMin").value);
+    if(!(m>0&&m<=600)){toast("How many minutes?");return;}
+    const e=EX[exPick];
+    closeSheet();addMove(e[0],Math.round(m),e[1]);
+  };
+}
+function habitGoalPrompt(which){
+  if(which==="water"){
+    const v=prompt("Daily water goal in glasses (1 glass = 250ml). 8 glasses = 2L:",hgoal.water);
+    const n=parseFloat(v);if(n>0&&n<=40){hgoal.water=Math.round(n);saveHGoals();renderWater();}
+  }else if(which==="sleep"){
+    const v=prompt("Sleep goal in hours per night:",hgoal.sleep);
+    const n=parseFloat(v);if(n>0&&n<=16){hgoal.sleep=Math.round(n*10)/10;saveHGoals();renderSleep();}
+  }else{
+    const v=prompt("Daily movement goal in minutes:",hgoal.move);
+    const n=parseFloat(v);if(n>0&&n<=600){hgoal.move=Math.round(n);saveHGoals();renderMove();}
+  }
 }
 
 /* craving swaps */
@@ -1925,7 +2272,8 @@ $("saveBtn").onclick=()=>{saveLog();saveHist();
 $("backupBtn").onclick=()=>{
   const data={ketocheck:1,budget,log:{day:todayKey(),items:log},hist,
     best:+(localStorage.getItem(K_BEST)||0),first:+localStorage.getItem(K_FIRST),
-    stats,weight,plan:planTier,pgoal,foods:myFoods,exported:new Date().toISOString()};
+    stats,weight,plan:planTier,pgoal,foods:myFoods,
+    water:waterLog,sleep:sleepLog,move:moveLog,hgoal,exported:new Date().toISOString()};
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:"application/json"}));
   a.download="ketocheck-backup.json";a.click();URL.revokeObjectURL(a.href);
@@ -1946,7 +2294,12 @@ $("restoreFile").onchange=ev=>{
       else if(d.log.day)hist[d.log.day]=Math.round(d.log.items.reduce((a,i)=>a+i.c,0)*10)/10;
     }
     if(d.stats){stats=Object.assign({xp:0,badges:{},awardedDays:{},foods:0,scans:0},d.stats);
-      stats.badges=stats.badges||{};stats.awardedDays=stats.awardedDays||{};saveStats();}
+      stats.badges=stats.badges||{};stats.awardedDays=stats.awardedDays||{};
+      stats.wDays=stats.wDays||{};stats.sDays=stats.sDays||{};stats.mDays=stats.mDays||{};saveStats();}
+    if(d.water){waterLog=d.water;saveWater();}
+    if(d.sleep){sleepLog=d.sleep;saveSleep();}
+    if(d.move){moveLog=d.move;saveMove();}
+    if(d.hgoal){hgoal=Object.assign({water:8,sleep:8,move:30},d.hgoal);saveHGoals();}
     if(d.weight){weight=Object.assign({unit:"kg",start:null,goal:null,ins:[]},d.weight);
       weight.ins=weight.ins||[];saveWeight();}
     if(d.plan)setPlan(d.plan);
@@ -2048,6 +2401,13 @@ $("editPGoal").onclick=()=>{
 $("addFoodBtn").onclick=addFoodSheet;
 $("ideaShuf").onclick=()=>rotateIdea(true);
 $("ideaCheck").onclick=()=>{const t=$("ideaTxt").textContent;$("q").value=t;analyse(t);$("q").focus();};
+$("waterAdd").onclick=()=>setWater(waterToday()+1);
+$("waterSub").onclick=()=>setWater(waterToday()-1);
+$("waterGoalBtn").onclick=()=>habitGoalPrompt("water");
+$("sleepLogBtn").onclick=sleepSheet;
+$("sleepGoalBtn").onclick=()=>habitGoalPrompt("sleep");
+$("moveLogBtn").onclick=moveSheet;
+$("moveGoalBtn").onclick=()=>habitGoalPrompt("move");
 
 /* sandboxed page (claude.ai artifact frame): storage may not survive closing */
 (function(){
