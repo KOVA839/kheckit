@@ -267,6 +267,75 @@ body{background:var(--paper);color:var(--ink);
 .unitrow button.on{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
 .sheet-card .row{display:flex;gap:10px;margin-top:6px}
 .sheet-card .row .btn{flex:1}
+/* ── insights (Pro) ── */
+.insights{margin-top:30px;position:relative}
+.insights h2{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.prolock{font-size:9.5px;font-weight:800;letter-spacing:.08em;color:var(--gold);border:1px solid var(--gold);border-radius:5px;padding:1px 6px}
+.insights .sub{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+.ins-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 15px}
+.tile .k{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tile .v{font-size:26px;font-weight:800;line-height:1.1;margin-top:3px;letter-spacing:-.01em}
+.tile .v small{font-size:14px;font-weight:600;color:var(--muted)}
+.ins30{display:flex;gap:2px;align-items:flex-end;height:56px;margin-top:12px;
+  padding:12px 13px;background:var(--card);border:1px solid var(--line);border-radius:13px}
+.ins30 span{flex:1;border-radius:2px 2px 0 0;background:var(--go);min-height:2px}
+.ins30 span.over{background:var(--skip)}
+.ins30 span.empty{background:var(--line)}
+.lockwrap{position:relative}
+.lockwrap.locked .ins-tiles,.lockwrap.locked .ins30{filter:blur(5px);opacity:.5;pointer-events:none;user-select:none}
+.lockover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;text-align:center;padding:16px}
+.lockover[hidden]{display:none}
+.lockover .lk{font-size:30px}
+.lockover p{margin:0;font-size:14px;font-weight:600;max-width:22em}
+
+/* ── plans overlay ── */
+.gopro{background:linear-gradient(100deg,var(--gold),var(--go))!important;color:#fff!important;border:none!important}
+.plan-status{font-size:12.5px;color:var(--muted);align-self:center;margin-left:auto}
+.plan-status b{color:var(--gold)}
+.plans{position:fixed;inset:0;z-index:64;background:var(--paper);overflow-y:auto;padding:0 16px 60px}
+.plans[hidden]{display:none}
+.plans-inner{max-width:620px;margin:0 auto}
+.plans-top{position:sticky;top:0;background:var(--paper);padding:16px 0 12px;display:flex;align-items:center;
+  border-bottom:1px solid var(--line);z-index:1}
+.plans-top h2{margin:0;font-size:19px;font-weight:800}
+.plans-close{margin-left:auto;background:none;border:1px solid var(--line);border-radius:9px;
+  width:34px;height:34px;font-size:17px;cursor:pointer;color:var(--ink)}
+.plans-intro{font-size:14.5px;color:var(--muted);margin:16px 0 18px;text-wrap:balance}
+.ptier{border:1.5px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px;background:var(--card)}
+.ptier.best{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+.ptier .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--gold);background:var(--gold-soft);border-radius:6px;padding:2px 8px;margin-bottom:8px}
+.ptier h3{margin:0;font-size:22px;font-weight:800}
+.ptier .price{font-size:32px;font-weight:800;margin-top:6px;letter-spacing:-.02em}
+.ptier .price small{font-size:15px;font-weight:600;color:var(--muted)}
+.ptier .alt{font-size:12.5px;color:var(--muted);margin-top:2px}
+.plist{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.plist li{display:flex;gap:9px;font-size:14.5px;line-height:1.35}
+.plist li::before{content:"✓";color:var(--go);font-weight:800;flex:none}
+.plist li.off{color:var(--muted)}.plist li.off::before{content:"–";color:var(--muted)}
+.pcta{width:100%;margin-top:18px;font:inherit;font-weight:700;font-size:16px;padding:13px;border-radius:12px;
+  border:none;cursor:pointer;background:var(--ink);color:var(--paper)}
+.ptier.best .pcta{background:linear-gradient(100deg,var(--gold),var(--go));color:#fff}
+.pcta:disabled{background:var(--line);color:var(--muted);cursor:default}
+.pcta.own{background:var(--go-bg);color:var(--go)}
+.pcode{margin:22px 0 8px;padding:16px;border:1px dashed var(--line);border-radius:13px}
+.pcode h4{margin:0 0 4px;font-size:14px}
+.pcode p{margin:0 0 10px;font-size:12.5px;color:var(--muted)}
+.pcode .row{display:flex;gap:8px}
+.pcode input{flex:1;min-width:0;padding:11px 13px;font-size:16px;font-family:inherit;color:var(--ink);
+  background:var(--paper);border:2px solid var(--line);border-radius:10px;text-transform:uppercase}
+.pcode input:focus{outline:none;border-color:var(--gold)}
+.pcode button{font:inherit;font-weight:700;padding:11px 16px;border-radius:10px;border:none;background:var(--gold);color:#fff;cursor:pointer}
+.pnote{font-size:11.5px;color:var(--muted);line-height:1.55;margin-top:16px}
+.pmanage{display:flex;gap:9px;flex-wrap:wrap;margin-top:8px}
+.pmanage .btn{font-size:13px;padding:8px 13px}
+.themerow{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}
+.swatch{width:34px;height:34px;border-radius:9px;border:2px solid var(--line);cursor:pointer;position:relative}
+.swatch.on{border-color:var(--ink)}
+.swatch::after{content:"";position:absolute;inset:0;border-radius:7px}
+
 @media (prefers-reduced-motion: reduce){
   .xpfloat,.cele-card,.banner,.sheet-card,.achv-item.just,.xpfill,.wtrackfill{animation:none!important;transition:none!important}
 }
@@ -342,6 +411,20 @@ body{background:var(--paper);color:var(--ink);
     <div class="wbars" id="weekBars"></div>
   </div>
 
+  <div class="insights" id="insights">
+    <h2>Insights <span class="prolock" id="insLock" hidden>PRO</span></h2>
+    <p class="sub" id="insSub">Your last 30 days at a glance.</p>
+    <div class="lockwrap" id="insWrap">
+      <div class="ins-tiles" id="insTiles"></div>
+      <div class="ins30" id="ins30"></div>
+      <div class="lockover" id="insLockOver" hidden>
+        <span class="lk">📈</span>
+        <p>See your <b>full 30-day history</b>, average carbs, keto days and trends.</p>
+        <button class="btn" id="insUnlock">Unlock with Pro</button>
+      </div>
+    </div>
+  </div>
+
   <div class="achv">
     <h2>Achievements</h2>
     <p class="sub" id="achvSub">Earn badges by staying on track.</p>
@@ -349,10 +432,12 @@ body{background:var(--paper);color:var(--ink);
   </div>
 
   <div class="tools">
+    <button class="btn gopro" id="plansBtn">✨ Plans</button>
     <button class="btn ghost" id="saveBtn">Save</button>
     <button class="btn ghost" id="backupBtn">Backup file</button>
     <button class="btn ghost" id="restoreBtn">Restore</button>
     <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+    <span class="plan-status" id="planStatus"></span>
   </div>
   <div id="toast" role="status"></div>
 
@@ -371,6 +456,7 @@ body{background:var(--paper);color:var(--ink);
   <button class="btn" id="celeClose">Let’s go</button>
 </div></div>
 <canvas id="confetti"></canvas>
+<div class="plans" id="plans" hidden><div class="plans-inner" id="plansInner"></div></div>
 
 <script>
 'use strict';
@@ -1022,7 +1108,7 @@ function parseLabel(text){
 /* ═══ STATE ═══ */
 const K_BUDGET="ketocheck.budget",K_LOG="ketocheck.log",
       K_HIST="ketocheck.hist",K_FIRST="ketocheck.first",K_BEST="ketocheck.best",
-      K_STATS="ketocheck.stats",K_WEIGHT="ketocheck.weight";
+      K_STATS="ketocheck.stats",K_WEIGHT="ketocheck.weight",K_PLAN="ketocheck.plan";
 let budget=+(localStorage.getItem(K_BUDGET)||20);
 let hist={};try{hist=JSON.parse(localStorage.getItem(K_HIST)||"{}")}catch(e){}
 if(!localStorage.getItem(K_FIRST))localStorage.setItem(K_FIRST,String(Date.now()));
@@ -1040,6 +1126,9 @@ let weight={unit:"kg",start:null,goal:null,ins:[]};
 try{weight=Object.assign(weight,JSON.parse(localStorage.getItem(K_WEIGHT)||"{}"))}catch(e){}
 weight.ins=weight.ins||[];
 function saveWeight(){localStorage.setItem(K_WEIGHT,JSON.stringify(weight));}
+let planTier=localStorage.getItem(K_PLAN)||"free";
+function isPro(){return planTier==="pro"||planTier==="lifetime";}
+function setPlan(t){planTier=t;localStorage.setItem(K_PLAN,t);}
 
 function loadLog(){
   try{const o=JSON.parse(localStorage.getItem(K_LOG)||"{}");
@@ -1145,7 +1234,7 @@ function renderWeek(){
   });
 }
 function renderAll(){renderBudget();renderLog();renderKeto();renderWeek();
-  renderLevel();renderWeight();renderAchievements();}
+  renderLevel();renderWeight();renderAchievements();renderInsights();renderPlanStatus();}
 
 /* ═══ GAMIFY: XP · LEVELS · BADGES ═══ */
 const LEVELS=[
@@ -1208,6 +1297,7 @@ const BADGES=[
  {id:"half",e:"🎯",t:"Halfway There",d:"Halfway to your goal weight."},
  {id:"goal",e:"🏆",t:"Goal Crusher",d:"Hit your goal weight."},
  {id:"lvl5",e:"🎖️",t:"High Roller",d:"Reached level 5."},
+ {id:"founder",e:"🏅",t:"Founder",d:"A Lifetime supporter — thank you!"},
 ];
 function unlock(b,quiet){
   if(stats.badges[b.id])return;
@@ -1228,6 +1318,7 @@ function checkBadges(quiet){
     half:weight.goal!=null&&wp>=0.5,
     goal:weight.goal!=null&&wp>=1,
     lvl5:levelInfo(stats.xp).level>=5,
+    founder:planTier==="lifetime",
   };
   for(const b of BADGES)if(cond[b.id])unlock(b,quiet);
   renderAchievements();
@@ -1395,6 +1486,116 @@ function bannerBadge(b){
   if(item){item.classList.add("just");setTimeout(()=>item.classList.remove("just"),650);}
 }
 
+/* ═══ INSIGHTS (Pro) ═══ */
+function insightsData(){
+  const days=[],tKey=todayKey();
+  for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=dateKey(d);
+    const has=(k===tKey)?log.length>0:hist[k]!=null;
+    const val=(k===tKey)?used():(hist[k]||0);
+    days.push({k,val,has});}
+  const logged=days.filter(d=>d.has);
+  const avg=logged.length?logged.reduce((a,d)=>a+d.val,0)/logged.length:0;
+  const ketoDays=logged.filter(d=>d.val<=budget).length;
+  return{days,logged:logged.length,avg,ketoDays,best:bestStreak()};
+}
+function weightChange30(){
+  if(weight.ins.length<2)return 0;
+  const cut=new Date();cut.setDate(cut.getDate()-30);
+  const win=weight.ins.filter(x=>{const p=x.d.split("-");return new Date(+p[0],+p[1]-1,+p[2])>=cut;});
+  const arr=win.length>=2?win:weight.ins;
+  return arr[arr.length-1].w-arr[0].w;
+}
+function renderInsights(){
+  const wrap=$("insWrap");if(!wrap)return;
+  const pro=isPro();
+  wrap.classList.toggle("locked",!pro);
+  $("insLockOver").hidden=pro;$("insLock").hidden=pro;
+  $("insSub").textContent=pro?"Your last 30 days at a glance.":"Unlock 30-day trends, averages and keto-day counts with Pro.";
+  const d=insightsData(),wc=weightChange30();
+  const tiles=[
+    ["Avg net carbs",fmtG(Math.round(d.avg*10)/10)],
+    ["Keto days (30d)",d.ketoDays+' <small>/ '+d.logged+'</small>'],
+    ["Best streak",d.best+' <small>days</small>'],
+    weight.goal!=null?["Weight change",(wc<=-0.05?"▼ ":wc>=0.05?"▲ ":"")+fmtW(Math.abs(Math.round(wc*10)/10))]
+                     :["Your level","Lv "+levelInfo(stats.xp).level],
+  ];
+  $("insTiles").innerHTML=tiles.map(t=>'<div class="tile"><div class="k">'+t[0]+'</div><div class="v num">'+t[1]+'</div></div>').join("");
+  const max=Math.max(budget*1.3,...d.days.map(x=>x.val));
+  $("ins30").innerHTML=d.days.map(x=>{
+    const cls=!x.has?"empty":(x.val>budget?"over":"");
+    const h=x.has?Math.max(3,Math.round(x.val/max*44)):3;
+    return '<span class="'+cls+'" style="height:'+h+'px" title="'+x.k+': '+fmtG(x.val)+'"></span>';
+  }).join("");
+}
+
+/* ═══ PLANS / MONETIZATION ═══ */
+/* TODO(owner): replace these with your real Stripe / Gumroad / Lemon Squeezy checkout links */
+const STORE={
+  pro:"https://kheckit.gumroad.com/l/pro",
+  lifetime:"https://kheckit.gumroad.com/l/lifetime"
+};
+/* Codes you hand buyers after checkout (or wire your provider's license API here). Editable. */
+const CODES={"KHECKIT-PRO":"pro","KHECKIT-LIFE":"lifetime","FOUNDER":"lifetime"};
+const PLAN_DEFS=[
+ {id:"free",name:"Starter",price:"Free",per:"forever",
+  feats:["Unlimited food checks","Daily carb budget & ketosis flame","7-day history","Levels, XP & achievements","Weight goal tracking","Label scanner","Backup & restore"],
+  off:["30-day history & insights"]},
+ {id:"pro",name:"Pro",price:"$19.99",per:"/year",alt:"or $2.99 / month",best:true,
+  feats:["Everything in Starter","<b>30-day history & insights</b>","Average carbs, keto days & trends","Early access to new features"]},
+ {id:"lifetime",name:"Lifetime",price:"$39",per:"once",alt:"one payment — yours forever",
+  feats:["Everything in Pro, <b>forever</b>","No subscription, ever","All future Pro features","🏅 Founder badge"]},
+];
+function renderPlanStatus(){
+  const el=$("planStatus");if(!el)return;
+  el.innerHTML=isPro()?("<b>"+(planTier==="lifetime"?"Lifetime":"Pro")+"</b> ✓ active"):"Starter plan";
+  const pb=$("plansBtn");if(pb)pb.textContent=isPro()?"✨ Manage plan":"✨ Go Pro";
+}
+function openPlans(){renderPlans();$("plans").hidden=false;window.scrollTo(0,0);}
+function closePlans(){$("plans").hidden=true;}
+function renderPlans(){
+  const cur=planTier;
+  let h='<div class="plans-top"><h2>Keto Check Plans</h2><button class="plans-close" id="plansX" aria-label="Close">✕</button></div>'+
+    '<p class="plans-intro">Everything you use today stays <b>free, forever</b>. Pro adds deeper history and insights to keep you motivated.</p>';
+  PLAN_DEFS.forEach(p=>{
+    const owned=(p.id===cur)||(p.id==="pro"&&cur==="lifetime");
+    h+='<div class="ptier'+(p.best?" best":"")+'">'+
+      (p.best?'<span class="tag">Most popular</span>':'')+
+      '<h3>'+p.name+'</h3><div class="price">'+p.price+' <small>'+p.per+'</small></div>'+
+      (p.alt?'<div class="alt">'+p.alt+'</div>':'')+
+      '<ul class="plist">'+p.feats.map(f=>'<li>'+f+'</li>').join('')+
+        (p.off?p.off.map(f=>'<li class="off">'+f+'</li>').join(''):'')+'</ul>';
+    if(p.id==="free")h+='<button class="pcta" disabled>'+(cur==="free"?"Your plan":"Included")+'</button>';
+    else if(owned)h+='<button class="pcta own" disabled>✓ Active</button>';
+    else h+='<button class="pcta" data-buy="'+p.id+'">Get '+p.name+'</button>';
+    h+='</div>';
+  });
+  h+='<div class="pcode"><h4>Already paid? Enter your unlock code</h4>'+
+     '<p>You’ll get a code right after checkout. It activates on this device.</p>'+
+     '<div class="row"><input id="codeIn" placeholder="KHECKIT-PRO" autocomplete="off" spellcheck="false"><button id="codeGo">Unlock</button></div></div>';
+  if(cur!=="free")h+='<div class="pmanage"><button class="btn ghost" id="planDown">Switch to Starter</button></div>';
+  h+='<p class="pnote">Payments are handled by our checkout partner — Keto Check never sees your card details. '+
+     'Your unlock is stored on this device; use <b>Backup file</b> to carry it to another one. Prices in USD.</p>';
+  $("plansInner").innerHTML=h;
+  $("plansX").onclick=closePlans;
+  document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buyPlan(b.dataset.buy));
+  $("codeGo").onclick=()=>redeem($("codeIn").value);
+  $("codeIn").addEventListener("keydown",e=>{if(e.key==="Enter")redeem($("codeIn").value);});
+  const dn=$("planDown");if(dn)dn.onclick=()=>{setPlan("free");renderPlans();renderAll();toast("You’re back on Starter.");};
+}
+function buyPlan(id){
+  window.open(STORE[id],"_blank","noopener");
+  toast("Opening checkout — enter your code here once you’ve paid.");
+  setTimeout(()=>{const c=$("codeIn");if(c){c.scrollIntoView({block:"center"});c.focus();}},500);
+}
+function redeem(raw){
+  const code=(raw||"").trim().toUpperCase();
+  const tier=CODES[code];
+  if(!tier){toast("That code didn’t work — check for typos.");return;}
+  setPlan(tier);checkBadges();renderPlans();renderAll();
+  confetti(innerWidth/2,innerHeight*0.4,90);
+  toast("Unlocked "+(tier==="lifetime"?"Lifetime":"Pro")+"! Enjoy 🎉");
+}
+
 /* craving swaps */
 const SWAPS=[
 [/bread|toast|wrap|bun\b|roll\b|bagel|muffin|crumpet/,"keto bread (Helga's Lower Carb is in most supermarkets) or a lettuce wrap"],
@@ -1541,7 +1742,7 @@ $("saveBtn").onclick=()=>{saveLog();saveHist();
 $("backupBtn").onclick=()=>{
   const data={ketocheck:1,budget,log:{day:todayKey(),items:log},hist,
     best:+(localStorage.getItem(K_BEST)||0),first:+localStorage.getItem(K_FIRST),
-    stats,weight,exported:new Date().toISOString()};
+    stats,weight,plan:planTier,exported:new Date().toISOString()};
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:"application/json"}));
   a.download="ketocheck-backup.json";a.click();URL.revokeObjectURL(a.href);
@@ -1565,6 +1766,7 @@ $("restoreFile").onchange=ev=>{
       stats.badges=stats.badges||{};stats.awardedDays=stats.awardedDays||{};saveStats();}
     if(d.weight){weight=Object.assign({unit:"kg",start:null,goal:null,ins:[]},d.weight);
       weight.ins=weight.ins||[];saveWeight();}
+    if(d.plan)setPlan(d.plan);
     saveHist();saveLog();lastBadges=null;renderAll();checkBadges(true);toast("Backup restored.");
   }).catch(()=>toast("That file didn't look like a Keto Check backup."));
   ev.target.value="";
@@ -1652,6 +1854,8 @@ async function scanImage(file){
 }
 $("scanBtn").onclick=()=>$("camInput").click();
 $("camInput").onchange=ev=>{const f=ev.target.files[0];if(f)scanImage(f);ev.target.value="";};
+$("plansBtn").onclick=openPlans;
+$("insUnlock").onclick=openPlans;
 
 /* sandboxed page (claude.ai artifact frame): storage may not survive closing */
 (function(){
