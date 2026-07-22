@@ -336,8 +336,48 @@ body{background:var(--paper);color:var(--ink);
 .swatch.on{border-color:var(--ink)}
 .swatch::after{content:"";position:absolute;inset:0;border-radius:7px}
 
+/* ── protein row (topbar) ── */
+.protrow{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:12px;color:var(--muted)}
+.protrow .pico{font-size:13px}
+.ptrack{flex:1;height:7px;border-radius:99px;background:var(--line);overflow:hidden;min-width:40px}
+.pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,#C0417A,var(--gold));width:0;transition:width .4s}
+.pfill.hit{background:var(--go)}
+.pnum b{color:var(--ink)}
+.pedit{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:0 2px}
+.pedit:hover{color:var(--gold)}
+
+/* ── meal idea card ── */
+.idea{margin-top:14px;padding:13px 16px;border-radius:14px;background:var(--gold-soft);
+  border:1px solid var(--gold);display:flex;flex-direction:column;gap:6px}
+.idea-k{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.idea-txt{margin:0;font-size:16px;font-weight:600;line-height:1.35;color:var(--ink);text-wrap:balance}
+.idea-row{display:flex;gap:10px;align-items:center;margin-top:2px}
+.idea-shuf{background:var(--card);border:1px solid var(--gold);color:var(--gold);font:inherit;font-size:13px;
+  font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer}
+.idea-shuf:hover{background:var(--gold);color:#fff}
+.idea-eat{background:none;border:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline dotted}
+.idea-eat:hover{color:var(--ink)}
+
+/* ── my foods ── */
+.myfoods{margin-top:30px}
+.myfoods h2{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+  margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.addfood{margin-left:auto;background:var(--gold-soft);border:1px solid var(--gold);color:var(--gold);
+  font:inherit;font-size:12px;font-weight:700;padding:5px 12px;border-radius:99px;cursor:pointer;text-transform:none;letter-spacing:0}
+.addfood:hover{background:var(--gold);color:#fff}
+.mf-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
+  border-radius:11px;padding:10px 13px;margin-bottom:7px}
+.mf-item .mf-n{font-weight:600;font-size:15px}
+.mf-item .mf-d{font-size:12px;color:var(--muted);margin-top:1px}
+.mf-item .mf-log{margin-left:auto;background:var(--ink);color:var(--paper);border:none;font:inherit;
+  font-weight:700;font-size:13px;padding:7px 13px;border-radius:9px;cursor:pointer}
+.mf-item .mf-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:15px;padding:4px 6px}
+.mf-item .mf-del:hover{color:var(--skip)}
+.mf-empty{font-size:13.5px;color:var(--muted);padding:2px}
+.cprot{color:var(--muted)}
+
 @media (prefers-reduced-motion: reduce){
-  .xpfloat,.cele-card,.banner,.sheet-card,.achv-item.just,.xpfill,.wtrackfill{animation:none!important;transition:none!important}
+  .xpfloat,.cele-card,.banner,.sheet-card,.achv-item.just,.xpfill,.wtrackfill,.pfill{animation:none!important;transition:none!important}
 }
 </style>
 
@@ -350,6 +390,12 @@ body{background:var(--paper);color:var(--ink);
       </span>
     </div>
     <div class="ticks" id="ticks" aria-label="carbs used today"></div>
+    <div class="protrow">
+      <span class="pico">🥩</span>
+      <div class="ptrack"><div class="pfill" id="pFill"></div></div>
+      <span class="pnum"><b class="num" id="pNow">0</b>/<span class="num" id="pGoal">100</span>g protein
+        <button class="pedit" id="editPGoal" title="Set protein goal">✎</button></span>
+    </div>
   </div>
 
   <div class="levelstrip" id="levelStrip">
@@ -384,6 +430,14 @@ body{background:var(--paper);color:var(--ink);
     </div>
     <p class="scanhint">Camera button: photo the <b>nutrition label</b> — close up, flat, good light. If it can’t read it, you can type the two numbers instead.</p>
     <div class="chips" id="chips"></div>
+    <div class="idea" id="ideaCard">
+      <span class="idea-k">💡 What to eat</span>
+      <p class="idea-txt" id="ideaTxt"></p>
+      <div class="idea-row">
+        <button class="idea-shuf" id="ideaShuf">🎲 Another idea</button>
+        <button class="idea-eat" id="ideaCheck">check this</button>
+      </div>
+    </div>
   </div>
 
   <div class="card" id="card" aria-live="polite">
@@ -399,6 +453,11 @@ body{background:var(--paper);color:var(--ink);
   <div class="log">
     <h2>Eaten today</h2>
     <ul id="logList"></ul>
+  </div>
+
+  <div class="myfoods">
+    <h2>My foods <button class="addfood" id="addFoodBtn">+ Add a food</button></h2>
+    <div id="myFoodsList"></div>
   </div>
 
   <div class="wcard" id="weightCard">
@@ -1108,7 +1167,8 @@ function parseLabel(text){
 /* ═══ STATE ═══ */
 const K_BUDGET="ketocheck.budget",K_LOG="ketocheck.log",
       K_HIST="ketocheck.hist",K_FIRST="ketocheck.first",K_BEST="ketocheck.best",
-      K_STATS="ketocheck.stats",K_WEIGHT="ketocheck.weight",K_PLAN="ketocheck.plan";
+      K_STATS="ketocheck.stats",K_WEIGHT="ketocheck.weight",K_PLAN="ketocheck.plan",
+      K_PGOAL="ketocheck.pgoal",K_FOODS="ketocheck.foods";
 let budget=+(localStorage.getItem(K_BUDGET)||20);
 let hist={};try{hist=JSON.parse(localStorage.getItem(K_HIST)||"{}")}catch(e){}
 if(!localStorage.getItem(K_FIRST))localStorage.setItem(K_FIRST,String(Date.now()));
@@ -1129,6 +1189,9 @@ function saveWeight(){localStorage.setItem(K_WEIGHT,JSON.stringify(weight));}
 let planTier=localStorage.getItem(K_PLAN)||"free";
 function isPro(){return planTier==="pro"||planTier==="lifetime";}
 function setPlan(t){planTier=t;localStorage.setItem(K_PLAN,t);}
+let pgoal=+(localStorage.getItem(K_PGOAL)||0);
+let myFoods=[];try{myFoods=JSON.parse(localStorage.getItem(K_FOODS)||"[]")}catch(e){}
+function saveFoods(){localStorage.setItem(K_FOODS,JSON.stringify(myFoods));}
 
 function loadLog(){
   try{const o=JSON.parse(localStorage.getItem(K_LOG)||"{}");
@@ -1234,7 +1297,8 @@ function renderWeek(){
   });
 }
 function renderAll(){renderBudget();renderLog();renderKeto();renderWeek();
-  renderLevel();renderWeight();renderAchievements();renderInsights();renderPlanStatus();}
+  renderLevel();renderWeight();renderAchievements();renderInsights();renderPlanStatus();
+  renderProtein();renderMyFoods();}
 
 /* ═══ GAMIFY: XP · LEVELS · BADGES ═══ */
 const LEVELS=[
@@ -1596,6 +1660,116 @@ function redeem(raw){
   toast("Unlocked "+(tier==="lifetime"?"Lifetime":"Pro")+"! Enjoy 🎉");
 }
 
+/* ═══ PROTEIN TRACKING ═══ (estimated per-food; exact for custom foods & labels) */
+const PROT=[
+ [/whey|protein powder|casein|collagen/,70],[/protein bar|quest bar|keto bar/,33],[/protein shake/,8],
+ [/chicken|turkey|beef|steak|pork|lamb|mince|veal|venison|duck|jerky|biltong|\bham\b|bacon|sausage|salami|pepperoni|meatball|ribs|schnitzel|prosciutto|pastrami|kebab meat|doner meat|kabana|twiggy/,26],
+ [/salmon|tuna|\bcod\b|fish|prawn|shrimp|sardine|mackerel|snapper|barramundi|crab|lobster|sashimi|anchov/,22],
+ [/\begg|omelette|omelet|scrambled|frittata/,13],
+ [/parmesan/,32],[/halloumi|feta|cheddar|cheese|mozzarella|gouda|edam|swiss|brie|blue cheese|goat cheese|paneer/,23],
+ [/cottage cheese/,11],[/greek yog|yopro|chobani fit|high protein yog/,10],
+ [/tofu|tempeh|edamame|seitan/,14],
+ [/peanut butter|almond butter/,22],
+ [/almond|peanut|walnut|cashew|pistachio|hazelnut|pecan|macadamia|\bnuts\b|pepitas|sunflower seed|pumpkin seed/,19],
+ [/lentil|chickpea|black beans|kidney beans|baked beans|hummus|\bbeans\b|dal|dahl/,8],
+ [/yogurt|yoghurt|fruche|vaalia/,5],[/\bmilk\b|cream|latte|cappuccino|flat white|flavoured milk|milo/,3.3],
+ [/bread|pasta|rice|\boat|cereal|noodle|quinoa|couscous|wrap|tortilla|bagel|cracker|weetbix|pizza|burrito|sandwich|sub\b/,9],
+ [/broccoli|spinach|kale|cauliflower|asparagus|brussel|mushroom|avocado|salad|lettuce|cucumber|zucchini|cabbage|greens|capsicum|pepper|celery|olives/,2.5],
+ [/apple|banana|orange|berr|grape|melon|mango|peach|pear|kiwi|fruit|plum|apricot/,0.7],
+];
+function proteinPer100(name,e){
+  if(e&&e.prot100!=null)return e.prot100;
+  const n=norm(name);
+  for(const[re,v]of PROT)if(re.test(n))return v;
+  return 4;
+}
+function proteinToday(){return log.reduce((a,i)=>a+(i.p||0),0);}
+function proteinGoalVal(){return pgoal>0?pgoal:(weight.start?Math.round(weight.start*1.4):100);}
+function renderProtein(){
+  const p=proteinToday(),g=proteinGoalVal();
+  $("pNow").textContent=Math.round(p);$("pGoal").textContent=g;
+  const f=$("pFill");f.style.width=Math.min(100,Math.round(p/g*100))+"%";
+  f.classList.toggle("hit",p>=g);
+}
+
+/* ═══ CUSTOM FOODS ═══ */
+function customToE(f){return{names:[f.name],nc100:f.carbs/f.servG*100,serv:f.servG,unit:"serving",L:false,
+  prot100:f.prot/f.servG*100,custom:true};}
+function findCustom(text){
+  const q=norm(text);if(!q||!myFoods.length)return null;
+  let best=null,bs=0;
+  for(const f of myFoods){const nf=norm(f.name);
+    let s=0;
+    if(nf===q)s=100;
+    else if(nf.includes(q)||q.includes(nf))s=72;
+    else{const qt=q.split(" "),ft=nf.split(" ");let hit=0;for(const t of ft)if(qt.includes(t))hit++;s=ft.length?hit/ft.length*60:0;}
+    if(s>bs){bs=s;best=f;}}
+  return bs>=55?best:null;
+}
+function renderMyFoods(){
+  const box=$("myFoodsList");if(!box)return;box.innerHTML="";
+  if(!myFoods.length){box.innerHTML='<div class="mf-empty">No custom foods yet. Tap <b>+ Add a food</b> to save your go-to meals, shakes or snacks with their carbs and protein.</div>';return;}
+  myFoods.forEach((f,i)=>{
+    const el=document.createElement("div");el.className="mf-item";
+    el.innerHTML='<div><div class="mf-n">'+f.name+'</div><div class="mf-d num">'+
+      fmtG(f.carbs)+' carbs · '+Math.round(f.prot)+'g protein <span class="cprot">/ '+f.servG+'g serving</span></div></div>';
+    const log=document.createElement("button");log.className="mf-log";log.textContent="Log";
+    log.onclick=()=>quickLogCustom(f);
+    const del=document.createElement("button");del.className="mf-del";del.textContent="✕";del.title="remove";
+    del.onclick=()=>{myFoods.splice(i,1);saveFoods();renderMyFoods();toast("Removed "+f.name+".");};
+    el.append(log,del);box.appendChild(el);
+  });
+}
+function quickLogCustom(f){
+  log.push({n:f.name,c:r1(f.carbs),p:r1(f.prot)});saveLog();
+  stats.foods=(stats.foods||0)+1;saveStats();renderAll();
+  const kp=$("ketoPanel");kp.classList.remove("pop");void kp.offsetWidth;kp.classList.add("pop");
+  awardXP(3);
+  toast("Logged "+f.name+" · +3 XP · "+fmtG(Math.max(0,budget-used()))+" carbs left.");
+}
+function addFoodSheet(){
+  openSheet('<h3>Add a food</h3>'+
+    '<label>Name<input id="cfName" type="text" inputmode="text" placeholder="e.g. My protein shake" style="text-transform:none;-webkit-text-transform:none"></label>'+
+    '<label>Serving size (grams)<input id="cfServ" type="number" inputmode="decimal" min="1" max="2000" step="1" placeholder="e.g. 300"></label>'+
+    '<label>Net carbs in that serving (grams)<input id="cfCarb" type="number" inputmode="decimal" min="0" max="500" step="0.1" placeholder="e.g. 4"></label>'+
+    '<label>Protein in that serving (grams)<input id="cfProt" type="number" inputmode="decimal" min="0" max="500" step="0.1" placeholder="e.g. 30"></label>'+
+    '<div class="row"><button class="btn" id="cfSave">Save food</button><button class="btn ghost" id="cfCancel">Cancel</button></div>');
+  $("cfName").type="text";
+  setTimeout(()=>$("cfName").focus(),60);
+  $("cfCancel").onclick=closeSheet;
+  $("cfSave").onclick=()=>{
+    const name=($("cfName").value||"").trim();
+    const servG=parseFloat($("cfServ").value)||100;
+    const carbs=parseFloat($("cfCarb").value);
+    const prot=parseFloat($("cfProt").value)||0;
+    if(!name){toast("Give your food a name.");return;}
+    if(!(carbs>=0)){toast("Enter the net carbs for one serving.");return;}
+    myFoods.push({name,servG,carbs,prot});saveFoods();closeSheet();renderMyFoods();
+    awardXP(5);
+    toast('Saved "'+name+'". Type its name any time, or tap Log.');
+  };
+}
+
+/* ═══ MEAL IDEAS ═══ (rotate on a timer + gentle random popups) */
+const IDEAS={
+ b:["Scrambled eggs with butter, cheese and spinach","3 rashers of bacon and two fried eggs","Greek yogurt (full-fat) with a few berries and walnuts","A cheese-and-ham omelette","Avocado mashed on keto bread with salt and chilli","Chia pudding made with coconut cream","Bulletproof coffee and a boiled egg or two","Smoked salmon with cream cheese","Cottage cheese with cucumber and cracked pepper","Mushrooms and halloumi fried in butter","Bacon and avocado, no toast","A veggie frittata slice","Sausages with grilled tomato","Full-fat Greek yogurt with peanut butter stirred through"],
+ l:["Chicken caesar salad, hold the croutons","A bunless burger wrapped in lettuce with cheese and bacon","Tuna mayo stuffed into avocado halves","Cobb salad with egg, chicken, bacon and blue cheese","Zucchini noodles with pesto and parmesan","Ham, cheese and salad roll-ups (no bread)","Leftover roast chicken with buttery greens","A big Greek salad with extra feta and olives","Cauliflower rice stir-fry with prawns","Deli meat, cheese and pickle plate","Chicken thighs with a side salad","Egg salad in lettuce cups","Smoked salmon and cream-cheese cucumber boats"],
+ d:["Steak with garlic butter and roasted broccoli","Salmon fillet with asparagus and hollandaise","Roast chicken thighs with cauliflower mash","Pork chops with buttered green beans","Beef mince stir-fry over cauliflower rice","Butter chicken (no rice) with extra veg","Lamb chops with a big salad","Cheeseburger patties with fried mushrooms and cheese","Baked salmon with a creamy spinach side","Sausages with cheesy cauliflower bake","Slow-cooked beef with buttery cabbage","Chicken parma-style with almond crumb and salad","Prawns in garlic butter with zoodles","Meatballs in tomato sauce over zucchini noodles"],
+ s:["A handful of macadamias or almonds","Cheese cubes and olives","Beef jerky or biltong","Pork crackling","Celery sticks with cream cheese or peanut butter","A boiled egg with salt","85% dark chocolate, a square or two","Pepperoni slices and cheese","Half an avocado with lemon and salt","A cheese stick and some cucumber","Greek yogurt with cinnamon","Fat bomb (coconut oil, cocoa, sweetener)","A few strawberries with whipped cream","Sugar-free jelly with cream"]
+};
+const ALLIDEAS=[].concat(IDEAS.b,IDEAS.l,IDEAS.d,IDEAS.s);
+function currentMealSet(){const h=new Date().getHours();return h<11?IDEAS.b:h<15?IDEAS.l:h<21?IDEAS.d:IDEAS.s;}
+let lastIdea="";
+function pickIdea(pool){let x;do{x=pool[Math.floor(Math.random()*pool.length)];}while(x===lastIdea&&pool.length>1);lastIdea=x;return x;}
+function rotateIdea(all){const t=$("ideaTxt");if(t)t.textContent=pickIdea(all?ALLIDEAS:currentMealSet());}
+function schedulePopup(){
+  const wait=(4+Math.random()*4)*60000; // 4–8 min
+  setTimeout(()=>{
+    if(!document.hidden){const m=pickIdea(currentMealSet());toast("💡 Keto idea: "+m);}
+    schedulePopup();
+  },wait);
+}
+
 /* craving swaps */
 const SWAPS=[
 [/bread|toast|wrap|bun\b|roll\b|bagel|muffin|crumpet/,"keto bread (Helga's Lower Carb is in most supermarkets) or a lettuce wrap"],
@@ -1630,7 +1804,7 @@ function showCard(tier,foodLine,word,say,how,logItem,isGuess){
   const acts=$("cActions");acts.innerHTML="";
   if(logItem){
     const b=document.createElement("button");b.className="btn";b.textContent="I ate it — log "+fmtG(logItem.c);
-    b.onclick=()=>{log.push({n:logItem.n,c:r1(logItem.c)});saveLog();
+    b.onclick=()=>{log.push({n:logItem.n,c:r1(logItem.c),p:r1(logItem.p||0)});saveLog();
       stats.foods=(stats.foods||0)+1;saveStats();renderAll();
       const kp=$("ketoPanel");kp.classList.remove("pop");void kp.offsetWidth;kp.classList.add("pop");
       awardXP(3);
@@ -1647,6 +1821,12 @@ function analyse(raw){
       "That’s <b>"+pct(p.manual)+"%</b> of your day.","",{n:"manual entry",c:p.manual});
     return;
   }
+  const cf=findCustom(p.food)||findCustom(p.full); // your saved foods win
+  if(cf){const ce=customToE(cf),grams=gramsFor(p,ce);
+    judge(ce,grams,{qtyLabel:unitPhrase(ce,grams),
+      itemName:cf.name+((p.qty!==null||p.unit||p.size!==1)?" ("+unitPhrase(ce,grams)+")":""),
+      note:" <i>(your food)</i>",swapText:cf.name});
+    return;}
   let e=null,entry=findFood(p.food)||findFood(p.full),isGuess=false,guessLabel="";
   if(entry){e={names:entry[0].split("|"),nc100:entry[1],serv:entry[2],unit:entry[3],L:entry[4]==="L"};}
   else{const fb=fallbackFood(p.food||p.full);
@@ -1673,8 +1853,11 @@ function judge(e,grams,opts){
   const name=opts.name||e.names[0];
   const qtyLabel=opts.qtyLabel||unitPhrase(e,grams);
   const isGuess=!!opts.isGuess;
+  const prot=proteinPer100(name,e)*grams/100;
+  const exact=e&&e.prot100!=null;
   const foodLine="<b>"+name+"</b> · "+qtyLabel+
-    " · <span class='num'>"+fmtG(carbs)+"</span> net carbs"+(opts.note||"");
+    " · <span class='num'>"+fmtG(carbs)+"</span> net carbs"+
+    (prot>=3?" · <span class='num cprot'>"+(exact?"":"~")+Math.round(prot)+"g protein</span>":"")+(opts.note||"");
   // how-much-can-I-have helper
   let how="";
   if(e.nc100<=4&&(!e.L||e.nc100<=1)){
@@ -1689,7 +1872,7 @@ function judge(e,grams,opts){
         "</b> already costs "+fmtG(e.nc100*Math.max(safeG,e.serv*.1)/100)+".";
     }
   }
-  const item={n:opts.itemName||name+" ("+qtyLabel+")",c:carbs};
+  const item={n:opts.itemName||name+" ("+qtyLabel+")",c:carbs,p:r1(prot)};
   const sw=swapFor(norm(name+" "+(opts.swapText||"")));
   if(e.nc100<=4&&carbs<=6&&(!e.L||e.nc100<=1)){
     showCard("go",foodLine,"GO FOR IT.",
@@ -1742,7 +1925,7 @@ $("saveBtn").onclick=()=>{saveLog();saveHist();
 $("backupBtn").onclick=()=>{
   const data={ketocheck:1,budget,log:{day:todayKey(),items:log},hist,
     best:+(localStorage.getItem(K_BEST)||0),first:+localStorage.getItem(K_FIRST),
-    stats,weight,plan:planTier,exported:new Date().toISOString()};
+    stats,weight,plan:planTier,pgoal,foods:myFoods,exported:new Date().toISOString()};
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:"application/json"}));
   a.download="ketocheck-backup.json";a.click();URL.revokeObjectURL(a.href);
@@ -1767,6 +1950,8 @@ $("restoreFile").onchange=ev=>{
     if(d.weight){weight=Object.assign({unit:"kg",start:null,goal:null,ins:[]},d.weight);
       weight.ins=weight.ins||[];saveWeight();}
     if(d.plan)setPlan(d.plan);
+    if(d.pgoal!=null){pgoal=d.pgoal;localStorage.setItem(K_PGOAL,String(pgoal));}
+    if(Array.isArray(d.foods)){myFoods=d.foods;saveFoods();}
     saveHist();saveLog();lastBadges=null;renderAll();checkBadges(true);toast("Backup restored.");
   }).catch(()=>toast("That file didn't look like a Keto Check backup."));
   ev.target.value="";
@@ -1856,6 +2041,13 @@ $("scanBtn").onclick=()=>$("camInput").click();
 $("camInput").onchange=ev=>{const f=ev.target.files[0];if(f)scanImage(f);ev.target.value="";};
 $("plansBtn").onclick=openPlans;
 $("insUnlock").onclick=openPlans;
+$("editPGoal").onclick=()=>{
+  const v=prompt("Daily protein goal in grams (a common keto target is about 1.4g per kg of body weight):",proteinGoalVal());
+  const n=parseFloat(v);if(n>0&&n<500){pgoal=n;localStorage.setItem(K_PGOAL,String(n));renderProtein();}
+};
+$("addFoodBtn").onclick=addFoodSheet;
+$("ideaShuf").onclick=()=>rotateIdea(true);
+$("ideaCheck").onclick=()=>{const t=$("ideaTxt").textContent;$("q").value=t;analyse(t);$("q").focus();};
 
 /* sandboxed page (claude.ai artifact frame): storage may not survive closing */
 (function(){
@@ -1870,5 +2062,6 @@ $("insUnlock").onclick=openPlans;
 })();
 
 renderAll();checkBadges(true);
+rotateIdea();schedulePopup();
 </script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js");</script></body></html>
